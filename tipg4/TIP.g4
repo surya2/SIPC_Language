@@ -40,16 +40,21 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
      | '*' expr 				#deRefExpr
      | SUB NUMBER				#negNumber
+     | NOT expr                 #notExpr
      | '&' expr					#refExpr
-     | expr op=(MUL | DIV) expr 		#multiplicativeExpr
+     | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr
      | expr op=(ADD | SUB) expr 		#additiveExpr
-     | expr op=GT expr 				#relationalExpr
+     | expr op=(GT | LT | GTE | LTE) expr 				#relationalExpr
      | expr op=(EQ | NE) expr 			#equalityExpr
+     | expr op=AND expr            #andExpr
+     | expr op=OR expr             #orExpr
      | IDENTIFIER				#varExpr
      | NUMBER					#numExpr
+     | '-' NUMBER               #negNumExpr
      | KINPUT					#inputExpr
      | KALLOC expr				#allocExpr
      | KNULL					#nullExpr
+     | (TRUE | FALSE)           #booleanAssignmentExpr
      | recordExpr				#recordRule
      | '(' expr ')'				#parenExpr
 ;
@@ -76,6 +81,8 @@ whileStmt : KWHILE '(' expr ')' statement ;
 
 ifStmt : KIF '(' expr ')' statement (KELSE statement)? ;
 
+ternaryStmt : expr TIF expr TELSE expr;
+
 outputStmt : KOUTPUT expr ';'  ;
 
 errorStmt : KERROR expr ';'  ;
@@ -89,11 +96,17 @@ returnStmt : KRETURN expr ';'  ;
 
 MUL : '*' ;
 DIV : '/' ;
+MOD : '%' ;
 ADD : '+' ;
 SUB : '-' ;
 GT  : '>' ;
+GTE : '>=' ;
+LT  : '<' ;
+LTE : '<=' ;
 EQ  : '==' ;
 NE  : '!=' ;
+TIF : '?'  ;
+TELSE : ':' ;
 
 NUMBER : [0-9]+ ;
 
@@ -109,6 +122,11 @@ KRETURN : 'return' ;
 KNULL   : 'null' ;
 KOUTPUT : 'output' ;
 KERROR  : 'error' ;
+OR      : 'or' ;
+AND     : 'and' ;
+NOT     : 'not' ;
+TRUE    : 'true' ;
+FALSE   : 'false' ;
 
 // Keyword to declare functions as polymorphic
 KPOLY   : 'poly' ;
