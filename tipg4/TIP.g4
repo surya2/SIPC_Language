@@ -52,7 +52,7 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr op=OR expr             #orExpr
      | <assoc=right> expr op=TIF expr op=TELSE expr #ternaryExpr
      | <assoc=right> expr op=(ASSIGN | CONCAT) expr #assignExpression
-     | IDENTIFIER				#varExpr#varExpr
+     | IDENTIFIER				#varExpr
      | NUMBER					#numExpr
      | KINPUT					#inputExpr
      | KALLOC expr				#allocExpr
