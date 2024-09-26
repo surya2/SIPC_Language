@@ -42,7 +42,7 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | '*' expr 				#deRefExpr
      | SUB NUMBER				#negExpr
      | NOT+ expr                 #notExpr
-     | prefix=MINUS expr        #negExpr
+     | prefix=SUB expr        #negExpr
      | '&' expr					#refExpr
      | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr
      | expr op=(ADD | SUB) expr 		#additiveExpr
@@ -120,7 +120,6 @@ TIF : '?'  ;
 TELSE : ':' ;
 CONCAT : '+=' ;
 ASSIGN : '=' ;
-MINUS : '-' ;
 LEN : '#' ;
 INC : '++' ;
 DEC : '--' ;
