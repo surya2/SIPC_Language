@@ -74,6 +74,8 @@ fieldExpr : IDENTIFIER ':' expr ;
 statement : blockStmt
     | assignStmt
     | whileStmt
+    | iterStmt
+    | forStmt
     | ifStmt
     | outputStmt
     | errorStmt
@@ -84,6 +86,10 @@ assignStmt : expr '=' expr ';' ;
 blockStmt : '{' (statement*) '}' ;
 
 whileStmt : KWHILE '(' expr ')' statement ;
+
+iterStmt : KFOR '(' expr ':' expr ')' statement ;
+
+forStmt : KFOR '(' expr ':' expr '..' expr ('by' expr)? ')' statement ;
 
 ifStmt : KIF '(' expr ')' statement (KELSE statement)? ;
 
@@ -126,6 +132,7 @@ NUMBER : [0-9]+ ;
 KALLOC  : 'alloc' ;
 KINPUT  : 'input' ;
 KWHILE  : 'while' ;
+KFOR    : 'for' ;
 KIF     : 'if' ;
 KELSE   : 'else' ;
 KVAR    : 'var' ;
