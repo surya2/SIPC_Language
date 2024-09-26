@@ -51,7 +51,6 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr op=AND expr            #andExpr
      | expr op=OR expr             #orExpr
      | <assoc=right> expr op=TIF expr op=TELSE expr #ternaryExpr
-     | <assoc=right> expr op=(ASSIGN | CONCAT) expr #assignExpression
      | IDENTIFIER				#varExpr
      | NUMBER					#numExpr
      | KINPUT					#inputExpr
@@ -119,7 +118,6 @@ EQ  : '==' ;
 NE  : '!=' ;
 TIF : '?'  ;
 TELSE : ':' ;
-CONCAT : '+=' ;
 ASSIGN : '=' ;
 LEN : '#' ;
 INC : '++' ;
