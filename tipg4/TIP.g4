@@ -38,8 +38,9 @@ nameDeclaration : IDENTIFIER ;
 //
 expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
+     | expr (INC | DEC)         #incExpr
      | '*' expr 				#deRefExpr
-     | SUB NUMBER				#negNumber
+     | SUB NUMBER				#negExpr
      | NOT+ expr                 #notExpr
      | prefix=MINUS expr        #negExpr
      | '&' expr					#refExpr
@@ -59,6 +60,9 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | TRUE | FALSE           #booleanAssignmentExpr
      | recordExpr				#recordRule
      | '(' expr ')'				#parenExpr
+     | LEN expr                 #lenExpr
+     | array                    #arrayExpr
+     | IDENTIFIER '[' expr ']'  #arrayRefExpr
 ;
 
 recordExpr : '{' (fieldExpr (',' fieldExpr)*)? '}' ;
@@ -89,6 +93,7 @@ errorStmt : KERROR expr ';'  ;
 
 returnStmt : KRETURN expr ';'  ;
 
+array : '[' ( expr ( ',' expr )* )? ']' ;
 
 ////////////////////// TIP Lexicon ////////////////////////// 
 
@@ -109,7 +114,10 @@ TIF : '?'  ;
 TELSE : ':' ;
 CONCAT : '+=' ;
 ASSIGN : '=' ;
-MINUS : '-';
+MINUS : '-' ;
+LEN : '#' ;
+INC : '++' ;
+DEC : '--' ;
 
 NUMBER : [0-9]+ ;
 
