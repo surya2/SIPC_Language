@@ -40,8 +40,8 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
      | expr (INC | DEC)         #incExpr
      | '*' expr 				#deRefExpr
-     | SUB NUMBER				#negExpr
-     | NOT+ expr                 #notExpr
+     | SUB NUMBER				#negNumber
+     | NOT expr                 #notExpr
      | prefix=SUB expr        #negNumExpr
      | '&' expr					#refExpr
      | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr
