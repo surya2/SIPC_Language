@@ -40,7 +40,8 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
      | '*' expr 				#deRefExpr
      | SUB NUMBER				#negNumber
-     | NOT expr                 #notExpr
+     | NOT+ expr                 #notExpr
+     | prefix=MINUS expr        #negExpr
      | '&' expr					#refExpr
      | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr
      | expr op=(ADD | SUB) expr 		#additiveExpr
@@ -48,13 +49,14 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr op=(EQ | NE) expr 			#equalityExpr
      | expr op=AND expr            #andExpr
      | expr op=OR expr             #orExpr
+     | <assoc=right> expr op=TIF expr op=TELSE expr #ternaryExpr
+     | <assoc=right> expr op=(ASSIGN | CONCAT) expr #assignExpression
      | IDENTIFIER				#varExpr
      | NUMBER					#numExpr
-     | '-' NUMBER               #negNumExpr
      | KINPUT					#inputExpr
      | KALLOC expr				#allocExpr
      | KNULL					#nullExpr
-     | (TRUE | FALSE)           #booleanAssignmentExpr
+     | TRUE | FALSE           #booleanAssignmentExpr
      | recordExpr				#recordRule
      | '(' expr ')'				#parenExpr
 ;
@@ -81,8 +83,6 @@ whileStmt : KWHILE '(' expr ')' statement ;
 
 ifStmt : KIF '(' expr ')' statement (KELSE statement)? ;
 
-ternaryStmt : expr TIF expr TELSE expr;
-
 outputStmt : KOUTPUT expr ';'  ;
 
 errorStmt : KERROR expr ';'  ;
@@ -107,6 +107,9 @@ EQ  : '==' ;
 NE  : '!=' ;
 TIF : '?'  ;
 TELSE : ':' ;
+CONCAT : '+=' ;
+ASSIGN : '=' ;
+MINUS : '-';
 
 NUMBER : [0-9]+ ;
 
