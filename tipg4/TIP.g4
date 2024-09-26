@@ -42,7 +42,7 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | '*' expr 				#deRefExpr
      | SUB NUMBER				#negExpr
      | NOT+ expr                 #notExpr
-     | prefix=SUB expr        #negExpr
+     | prefix=SUB expr        #negNumExpr
      | '&' expr					#refExpr
      | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr
      | expr op=(ADD | SUB) expr 		#additiveExpr
