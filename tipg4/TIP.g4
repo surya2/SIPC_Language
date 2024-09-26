@@ -52,12 +52,13 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr op=OR expr             #orExpr
      | <assoc=right> expr op=TIF expr op=TELSE expr #ternaryExpr
      | <assoc=right> expr op=(ASSIGN | CONCAT) expr #assignExpression
-     | IDENTIFIER				#varExpr
+     | IDENTIFIER				#varExpr#varExpr
      | NUMBER					#numExpr
      | KINPUT					#inputExpr
      | KALLOC expr				#allocExpr
      | KNULL					#nullExpr
-     | TRUE | FALSE           #booleanAssignmentExpr
+     | TRUE                     #booleanTrueExpr
+     | FALSE                    #booleanFalseExpr
      | recordExpr				#recordRule
      | '(' expr ')'				#parenExpr
      | LEN expr                 #lenExpr
