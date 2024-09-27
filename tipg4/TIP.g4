@@ -51,13 +51,12 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr op=AND expr            #andExpr
      | expr op=OR expr             #orExpr
      | <assoc=right> expr op=TIF expr op=TELSE expr #ternaryExpr
+     | (TRUE | FALSE)           #booleanExpr
      | IDENTIFIER				#varExpr
      | NUMBER					#numExpr
      | KINPUT					#inputExpr
      | KALLOC expr				#allocExpr
      | KNULL					#nullExpr
-     | TRUE                     #booleanTrueExpr
-     | FALSE                    #booleanFalseExpr
      | recordExpr				#recordRule
      | '(' expr ')'				#parenExpr
      | LEN expr                 #lenExpr
