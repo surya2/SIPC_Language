@@ -4,6 +4,8 @@
 #include "ParserHelper.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <string>
+#include <iostream>
 
 /*
  * -----------------------------------------------------------------------------------------------------
@@ -600,4 +602,73 @@ TEST_CASE("SIP Parser: for loop with inrement", "[SIP Parser]")
     )";
 
   REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+/*
+ * -----------------------------------------------------------------------------------------------------
+ * Operator precedence and parse tree expected result tests across the scenarios above
+ * -----------------------------------------------------------------------------------------------------
+ */
+TEST_CASE("SIP Parser: precedence of boolean operators", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y, z;
+        x = true;
+        y = false;
+        z = x and y or x;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr (expr x) and (expr y)) or (expr x))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of arithmetic operators with modulo", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y, z;
+        x = 3;
+        y = 2;
+        z = x % y + 1;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr (expr x) % (expr y)) + (expr 1))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of arithmetic operators with negation", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y, z;
+        x = 3;
+        y = 2;
+        z = -x + y;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr - (expr x)) + (expr y))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of relational operators with ternary condition expression", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        z = x > y ? x : y > 1 ? y : x;
+      }
+    )";
+  std::string expected = "(expr (expr (expr x) > (expr y)) ? (expr x) : (expr (expr (expr y) > (expr 1)) ? (expr y) : (expr x)))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
 }
