@@ -48,10 +48,10 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr op=(ADD | SUB) expr 		#additiveExpr
      | expr op=(GT | LT | GTE | LTE) expr 				#relationalExpr
      | expr op=(EQ | NE) expr 			#equalityExpr
-     | expr op=AND expr            #andExpr
-     | expr op=OR expr             #orExpr
+     | expr AND expr            #andExpr
+     | expr OR expr             #orExpr
      | <assoc=right> expr op=TIF expr op=TELSE expr #ternaryExpr
-     | (TRUE | FALSE)           #booleanExpr
+     | (KTRUE | KFALSE)           #booleanExpr
      | IDENTIFIER				#varExpr
      | NUMBER					#numExpr
      | KINPUT					#inputExpr
@@ -82,7 +82,7 @@ statement : blockStmt
 
 assignStmt : expr '=' expr ';' ;
 
-blockStmt : '{' (statement*) '}' ;
+blockStmt : '{' (statement*) (returnStmt)? '}' ;
 
 whileStmt : KWHILE '(' expr ')' statement ;
 
@@ -140,8 +140,8 @@ KERROR  : 'error' ;
 OR      : 'or' ;
 AND     : 'and' ;
 NOT     : 'not' ;
-TRUE    : 'true' ;
-FALSE   : 'false' ;
+KTRUE    : 'true' ;
+KFALSE   : 'false' ;
 
 // Keyword to declare functions as polymorphic
 KPOLY   : 'poly' ;
