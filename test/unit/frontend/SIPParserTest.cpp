@@ -358,6 +358,192 @@ TEST_CASE("SIP Parser: mod operator with variables", "[SIP Parser]")
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
+TEST_CASE("SIP Parser: negation operator", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = -3;
+        y = x + 2;
+        return y;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: negation operator with variables", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 3;
+        y = -x + 2;
+        return y;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+/*
+ * -----------------------------------------------------------------------------------------------------
+ * Relational operator (<, <=, >=) tests
+ * -----------------------------------------------------------------------------------------------------
+ */
+TEST_CASE("SIP Parser: less than operator", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 3;
+        y = x < 2;
+        return y;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: less than or equal operator", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 3;
+        y = x <= 2;
+        return y;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: greater than or equal operator", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 3;
+        y = x >= 2;
+        return y;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+/*
+ * -----------------------------------------------------------------------------------------------------
+ * Ternary Condition expression operator tests
+ * -----------------------------------------------------------------------------------------------------
+ */
+TEST_CASE("SIP Parser: ternary condition expression", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y, z;
+        x = 3;
+        y = 2;
+        z = x > y ? x : y;
+        return z;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: multiple ternary condition expression", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y, z;
+        x = 3;
+        y = 2;
+        z = x > y ? x : y > 1 ? y : x;
+        return z;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+/*
+ * -----------------------------------------------------------------------------------------------------
+ * Increment and Decrement operator tests
+ * -----------------------------------------------------------------------------------------------------
+ */
+TEST_CASE("SIP Parser: increment operator", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 3;
+        y = x++;
+        return y;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: decrement operator", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 3;
+        y = x--;
+        return y;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: increment operator in while loop", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 3;
+        while(x < 10) {
+          x++;
+        }
+        return x;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: decrement operator in while loop", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 10;
+        while(x > 0) {
+          x--;
+        }
+        return x;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
 /*
  * -----------------------------------------------------------------------------------------------------
  * Iterator and For Loop statment tests
@@ -372,6 +558,42 @@ TEST_CASE("SIP Parser: iterator", "[SIP Parser]")
         y = [1, 2, 3];
         for(x : y) {
           z = z + x;
+        }
+        return z;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: for loop", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var i, x, y, z;
+        x = 0;
+        y = 10;
+        for(i : x .. y) {
+          z = z + i;
+        }
+        return z;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: for loop with inrement", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var i, x, y, z;
+        x = 0;
+        y = 10;
+        for(i : x .. y by 2) {
+          z = z + i;
         }
         return z;
       }

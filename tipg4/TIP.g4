@@ -38,7 +38,7 @@ nameDeclaration : IDENTIFIER ;
 //
 expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
-     | expr (INC | DEC)         #incExpr
+     | expr (INC | DEC)         #unaryIncDecExpr
      | '*' expr 				#deRefExpr
      | SUB NUMBER				#negNumber
      | NOT expr                 #notExpr
@@ -78,7 +78,10 @@ statement : blockStmt
     | ifStmt
     | outputStmt
     | errorStmt
+    | unaryStmt
 ;
+
+unaryStmt : expr (INC | DEC) ';' ;
 
 assignStmt : expr '=' expr ';' ;
 
