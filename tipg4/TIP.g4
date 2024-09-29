@@ -38,13 +38,22 @@ nameDeclaration : IDENTIFIER ;
 //
 expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
+     | expr (INC | DEC)         #unaryIncDecExpr
      | '*' expr 				#deRefExpr
+     | IDENTIFIER '[' expr ']'  #arrayRefExpr
+     | LEN expr                 #lenExpr
      | SUB NUMBER				#negNumber
+     | NOT expr                 #notExpr
+     | prefix=SUB expr        #negNumExpr
      | '&' expr					#refExpr
-     | expr op=(MUL | DIV) expr 		#multiplicativeExpr
+     | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr
      | expr op=(ADD | SUB) expr 		#additiveExpr
-     | expr op=GT expr 				#relationalExpr
+     | expr op=(GT | LT | GTE | LTE) expr 				#relationalExpr
+     | expr AND expr            #andExpr
+     | expr OR expr             #orExpr
      | expr op=(EQ | NE) expr 			#equalityExpr
+     | <assoc=right> expr op=TIF expr op=TELSE expr #ternaryExpr
+     | (KTRUE | KFALSE)           #booleanExpr
      | IDENTIFIER				#varExpr
      | NUMBER					#numExpr
      | KINPUT					#inputExpr
@@ -52,6 +61,7 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | KNULL					#nullExpr
      | recordExpr				#recordRule
      | '(' expr ')'				#parenExpr
+     | array                    #arrayExpr
 ;
 
 recordExpr : '{' (fieldExpr (',' fieldExpr)*)? '}' ;
@@ -63,16 +73,25 @@ fieldExpr : IDENTIFIER ':' expr ;
 statement : blockStmt
     | assignStmt
     | whileStmt
+    | iterStmt
+    | forStmt
     | ifStmt
     | outputStmt
     | errorStmt
+    | unaryStmt
 ;
 
-assignStmt : expr '=' expr ';' ;
+unaryStmt : expr (INC | DEC) ';' ;
 
-blockStmt : '{' (statement*) '}' ;
+assignStmt : expr ('=' | '+=' | '-=' | '*=' | '/=' | '%=') expr ';' ;
+
+blockStmt : '{' (statement*) (returnStmt)? '}' ;
 
 whileStmt : KWHILE '(' expr ')' statement ;
+
+iterStmt : KFOR '(' expr ':' expr ')' statement ;
+
+forStmt : KFOR '(' expr ':' expr '..' expr ('by' expr)? ')' statement ;
 
 ifStmt : KIF '(' expr ')' statement (KELSE statement)? ;
 
@@ -82,6 +101,7 @@ errorStmt : KERROR expr ';'  ;
 
 returnStmt : KRETURN expr ';'  ;
 
+array : '[' ( expr (( ',' expr )* | 'of' expr ) )? ']' ;
 
 ////////////////////// TIP Lexicon ////////////////////////// 
 
@@ -89,11 +109,21 @@ returnStmt : KRETURN expr ';'  ;
 
 MUL : '*' ;
 DIV : '/' ;
+MOD : '%' ;
 ADD : '+' ;
 SUB : '-' ;
 GT  : '>' ;
+GTE : '>=' ;
+LT  : '<' ;
+LTE : '<=' ;
 EQ  : '==' ;
 NE  : '!=' ;
+TIF : '?'  ;
+TELSE : ':' ;
+ASSIGN : '=' ;
+LEN : '#' ;
+INC : '++' ;
+DEC : '--' ;
 
 NUMBER : [0-9]+ ;
 
@@ -102,6 +132,7 @@ NUMBER : [0-9]+ ;
 KALLOC  : 'alloc' ;
 KINPUT  : 'input' ;
 KWHILE  : 'while' ;
+KFOR    : 'for' ;
 KIF     : 'if' ;
 KELSE   : 'else' ;
 KVAR    : 'var' ;
@@ -109,6 +140,11 @@ KRETURN : 'return' ;
 KNULL   : 'null' ;
 KOUTPUT : 'output' ;
 KERROR  : 'error' ;
+OR      : 'or' ;
+AND     : 'and' ;
+NOT     : 'not' ;
+KTRUE    : 'true' ;
+KFALSE   : 'false' ;
 
 // Keyword to declare functions as polymorphic
 KPOLY   : 'poly' ;

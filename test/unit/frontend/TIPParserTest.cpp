@@ -5,7 +5,8 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-TEST_CASE("TIP Parser: conditionals", "[TIP Parser]") {
+TEST_CASE("TIP Parser: conditionals", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       short() {
@@ -24,7 +25,8 @@ TEST_CASE("TIP Parser: conditionals", "[TIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: operators", "[TIP Parser]") {
+TEST_CASE("TIP Parser: operators", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       operators() {
@@ -44,7 +46,8 @@ TEST_CASE("TIP Parser: operators", "[TIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: pointers", "[TIP Parser]") {
+TEST_CASE("TIP Parser: pointers", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       operators() {
@@ -61,7 +64,8 @@ TEST_CASE("TIP Parser: pointers", "[TIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: funs", "[TIP Parser]") {
+TEST_CASE("TIP Parser: funs", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       foo(f, a) { return f(a); }
@@ -73,7 +77,8 @@ TEST_CASE("TIP Parser: funs", "[TIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: decls", "[TIP Parser]") {
+TEST_CASE("TIP Parser: decls", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       main() { var x; var y; var z; return 0; }
@@ -82,7 +87,8 @@ TEST_CASE("TIP Parser: decls", "[TIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: parens", "[TIP Parser]") {
+TEST_CASE("TIP Parser: parens", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       main() { return ((1 + 2) * 3) - ((((2 - 1)))); }
@@ -91,7 +97,8 @@ TEST_CASE("TIP Parser: parens", "[TIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: io stmts", "[TIP Parser]") {
+TEST_CASE("TIP Parser: io stmts", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       main() { var x; x = input; output x; error x; output x * x; error (x * x); return x; }
@@ -100,7 +107,8 @@ TEST_CASE("TIP Parser: io stmts", "[TIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: records", "[TIP Parser]") {
+TEST_CASE("TIP Parser: records", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       r() { var x, y; x = {f1:0, f2:13}; y = x.f1; x.f2 = y + a; return x.f2; }
@@ -110,7 +118,8 @@ TEST_CASE("TIP Parser: records", "[TIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: block stmts", "[TIP Parser]") {
+TEST_CASE("TIP Parser: block stmts", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       main() { var x, y; { x = 0; { y = x + 1; } } return x + y; }
@@ -119,7 +128,8 @@ TEST_CASE("TIP Parser: block stmts", "[TIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: identifiers and literals", "[TIP Parser]") {
+TEST_CASE("TIP Parser: identifiers and literals", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       main() { var __314, __; __314 = 00007; __ = 0000; return __; }
@@ -128,7 +138,8 @@ TEST_CASE("TIP Parser: identifiers and literals", "[TIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: dangling else", "[TIP Parser]") {
+TEST_CASE("TIP Parser: dangling else", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       operators() { var x; if (x==0) if (x==0) x = x + 1; else x = x-1; return x; }
@@ -137,7 +148,8 @@ TEST_CASE("TIP Parser: dangling else", "[TIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: input", "[TIP Parser]") {
+TEST_CASE("TIP Parser: input", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       operators() { var x; if (input) if (input) x = 1; else x = -1; return x; }
@@ -147,10 +159,31 @@ TEST_CASE("TIP Parser: input", "[TIP Parser]") {
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: address of field access", "[TIP Parser]") {
+TEST_CASE("TIP Parser: address of field access", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       operators() { var x, y; y = &(x.f); return *y; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("TIP Lexer: comparison token", "[TIP Lexer]")
+{
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; if (x <= 0) x = x + 1; return x; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("TIP Lexer: operator token", "[TIP Lexer]")
+{
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; if (x == 0) x = x % 2; return x; }
     )";
 
   REQUIRE(ParserHelper::is_parsable(stream));
@@ -160,7 +193,8 @@ TEST_CASE("TIP Parser: address of field access", "[TIP Parser]") {
  * They access the parse tree and ensure that the higher precedence
  * operator is nested more deeply than the lower precedence operator.
  */
-TEST_CASE("TIP Parser: mul higher precedence than add", "[TIP Parser]") {
+TEST_CASE("TIP Parser: mul higher precedence than add", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(main() { return 1 + 2 * 3; })";
   std::string expected = "(expr (expr 1) + (expr (expr 2) * (expr 3)))";
@@ -168,7 +202,8 @@ TEST_CASE("TIP Parser: mul higher precedence than add", "[TIP Parser]") {
   REQUIRE(tree.find(expected) != std::string::npos);
 }
 
-TEST_CASE("TIP Parser: access higher precedence than deref", "[TIP Parser]") {
+TEST_CASE("TIP Parser: access higher precedence than deref", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(main() { var p; return *p.f; })";
   std::string expected = "(expr * (expr (expr p) . f))";
@@ -176,7 +211,8 @@ TEST_CASE("TIP Parser: access higher precedence than deref", "[TIP Parser]") {
   REQUIRE(tree.find(expected) != std::string::npos);
 }
 
-TEST_CASE("TIP Parser: fun app higher precedence than deref", "[TIP Parser]") {
+TEST_CASE("TIP Parser: fun app higher precedence than deref", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(main() { var p; return *p(); })";
   std::string expected = "(expr * (expr (expr p) ( )))";
@@ -186,7 +222,8 @@ TEST_CASE("TIP Parser: fun app higher precedence than deref", "[TIP Parser]") {
 
 /************ The following are expected to fail parsing ************/
 
-TEST_CASE("TIP Parser: decl after stmt", "[TIP Parser]") {
+TEST_CASE("TIP Parser: decl after stmt", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       main() { var x; x = 0; var z; return 0; }
@@ -195,7 +232,8 @@ TEST_CASE("TIP Parser: decl after stmt", "[TIP Parser]") {
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: missing semi-colon", "[TIP Parser]") {
+TEST_CASE("TIP Parser: missing semi-colon", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       short() { var x; if (x>0) x = x + 1 return 0; }
@@ -204,7 +242,8 @@ TEST_CASE("TIP Parser: missing semi-colon", "[TIP Parser]") {
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: missing paren", "[TIP Parser]") {
+TEST_CASE("TIP Parser: missing paren", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       short() { var x; if x>0 x = x + 1; return 0; }
@@ -213,7 +252,8 @@ TEST_CASE("TIP Parser: missing paren", "[TIP Parser]") {
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: unbalanced blocks", "[TIP Parser]") {
+TEST_CASE("TIP Parser: unbalanced blocks", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       main() { var x, y; { x = 0; y = x + 1; } } return x + y; }
@@ -222,7 +262,8 @@ TEST_CASE("TIP Parser: unbalanced blocks", "[TIP Parser]") {
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: unbalanced binary expr", "[TIP Parser]") {
+TEST_CASE("TIP Parser: unbalanced binary expr", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       operators() { var x; x = y + + 1; return -x; }
@@ -231,7 +272,8 @@ TEST_CASE("TIP Parser: unbalanced binary expr", "[TIP Parser]") {
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: bad field delimiter", "[TIP Parser]") {
+TEST_CASE("TIP Parser: bad field delimiter", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       operators() { var x; x = {a:0, b 0}; return x.a; }
@@ -240,7 +282,8 @@ TEST_CASE("TIP Parser: bad field delimiter", "[TIP Parser]") {
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: bad field separator", "[TIP Parser]") {
+TEST_CASE("TIP Parser: bad field separator", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       operators() { var x; x = {a:0 b:0}; return x.a; }
@@ -249,7 +292,8 @@ TEST_CASE("TIP Parser: bad field separator", "[TIP Parser]") {
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: no expression statements", "[TIP Parser]") {
+TEST_CASE("TIP Parser: no expression statements", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       operators() { var x, y; x = y = 1; return x; }
@@ -258,7 +302,8 @@ TEST_CASE("TIP Parser: no expression statements", "[TIP Parser]") {
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Parser: keywords as ids", "[TIP Parser]") {
+TEST_CASE("TIP Parser: keywords as ids", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       if() { var x; if (x <= 0) x = x + 1; return x; }
@@ -267,25 +312,8 @@ TEST_CASE("TIP Parser: keywords as ids", "[TIP Parser]") {
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Lexer: illegal comparison token", "[TIP Lexer]") {
-  std::stringstream stream;
-  stream << R"(
-      operators() { var x; if (x <= 0) x = x + 1; return x; }
-    )";
-
-  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("TIP Lexer: illegal operator token", "[TIP Lexer]") {
-  std::stringstream stream;
-  stream << R"(
-      operators() { var x; if (x == 0) x = x % 2; return x; }
-    )";
-
-  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("TIP Lexer: illegal identifier token", "[TIP Lexer]") {
+TEST_CASE("TIP Lexer: illegal identifier token", "[TIP Lexer]")
+{
   std::stringstream stream;
   stream << R"(
       operators() { var $x; if ($x == 0) $x = $x + 2; return $x; }
@@ -294,7 +322,8 @@ TEST_CASE("TIP Lexer: illegal identifier token", "[TIP Lexer]") {
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("TIP Lexer: Lexing exceptions are thrown", "[TIP Lexer]") {
+TEST_CASE("TIP Lexer: Lexing exceptions are thrown", "[TIP Lexer]")
+{
   std::stringstream stream;
   stream << R"(
       main() {
@@ -306,7 +335,8 @@ TEST_CASE("TIP Lexer: Lexing exceptions are thrown", "[TIP Lexer]") {
                          ContainsWhat("token recognition error"));
 }
 
-TEST_CASE("TIP Parser: Parsing exceptions are thrown", "[TIP Parser]") {
+TEST_CASE("TIP Parser: Parsing exceptions are thrown", "[TIP Parser]")
+{
   std::stringstream stream;
   stream << R"(
       main() {
