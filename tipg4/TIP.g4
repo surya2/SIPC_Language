@@ -40,6 +40,8 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
      | expr (INC | DEC)         #unaryIncDecExpr
      | '*' expr 				#deRefExpr
+     | IDENTIFIER '[' expr ']'  #arrayRefExpr
+     | LEN expr                 #lenExpr
      | SUB NUMBER				#negNumber
      | NOT expr                 #notExpr
      | prefix=SUB expr        #negNumExpr
@@ -59,9 +61,7 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | KNULL					#nullExpr
      | recordExpr				#recordRule
      | '(' expr ')'				#parenExpr
-     | LEN expr                 #lenExpr
      | array                    #arrayExpr
-     | IDENTIFIER '[' expr ']'  #arrayRefExpr
 ;
 
 recordExpr : '{' (fieldExpr (',' fieldExpr)*)? '}' ;

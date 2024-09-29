@@ -732,6 +732,24 @@ TEST_CASE("SIP Parser: precedence of boolean unary and binary operators 2", "[SI
   REQUIRE(tree.find(expected) != std::string::npos);
 }
 
+TEST_CASE("SIP Parser: precedence of series of boolean operators", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y, d, z;
+        x = true;
+        y = false;
+        d = false;
+        z = y and d or y and true or not false;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr (expr (expr y) and (expr d)) or (expr (expr y) and (expr true))) or (expr not (expr false)))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
 TEST_CASE("SIP Parser: precedence of arithmetic operators with modulo", "[SIP Parser]")
 {
   std::stringstream stream;
@@ -766,12 +784,162 @@ TEST_CASE("SIP Parser: precedence of arithmetic operators with negation", "[SIP 
   REQUIRE(tree.find(expected) != std::string::npos);
 }
 
+TEST_CASE("SIP Parser: precedence of increment assignment in series with operators", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y, z;
+        x = 3;
+        y = 2;
+        z = x++ / y + 2;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr (expr (expr x) ++) / (expr y)) + (expr 2))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of dereference in series with operators", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var y, z;
+        y = 2;
+        z = *p * 4 + y;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr (expr * (expr p)) * (expr 4)) + (expr y))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of address operator in series with operators", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var y, z;
+        y = 2;
+        z = &y * 4 + x;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr (expr & (expr y)) * (expr 4)) + (expr x))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of series of arithmetic operators", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var y, z, d;
+        y = 2;
+        d = 6;
+        z = 6 / y * 5 % d + 6 - 3;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr (expr (expr (expr (expr 6) / (expr y)) * (expr 5)) % (expr d)) + (expr 6)) - (expr 3)) ;))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of arithmetic operators and single boolean binary operator", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var y;
+        y = 2;
+        z = y + 6 and 2 / 3;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr (expr y) + (expr 6)) and (expr (expr 2) / (expr 3)))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of arithmetic operators and multiple boolean binary operator", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 9;
+        y = 2;
+        z = 5-3 or x and y * 7;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr (expr 5) - (expr 3)) or (expr (expr x) and (expr (expr y) * (expr 7))))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of len operator", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x;
+        x = [0];
+        z = #x + 2;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr # (expr x)) + (expr 2))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of array reference", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x;
+        x = [0, 4, 5, 2];
+        z = x[3] + 4;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr x [ (expr 3) ]) + (expr 4))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of array expressions in array construction", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y, z, d;
+        x = 0;
+        y = 3;
+        z = -1;
+        d = [2+3, 4*5, x%6, z/y];
+        return z;
+      }
+    )";
+  std::string expected = "(array [ (expr (expr 2) + (expr 3)) , (expr (expr 4) * (expr 5)) , (expr (expr x) % (expr 6)) , (expr (expr z) / (expr y)) ])";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
 TEST_CASE("SIP Parser: precedence of relational operators with ternary condition expression", "[SIP Parser]")
 {
   std::stringstream stream;
   stream << R"(
       short() {
         z = x > y ? x : y > 1 ? y : x;
+        return z;
       }
     )";
   std::string expected = "(expr (expr (expr x) > (expr y)) ? (expr x) : (expr (expr (expr y) > (expr 1)) ? (expr y) : (expr x)))";
@@ -785,9 +953,52 @@ TEST_CASE("SIP Parser: precedence of relational operators with ternary condition
   stream << R"(
       short() {
         z = x > y ? y > 1 ? y : x : 0;
+        return z;
       }
     )";
   std::string expected = "(expr (expr x) > (expr y)) ? (expr (expr (expr y) > (expr 1)) ? (expr y) : (expr x)) : (expr 0))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of parenthesis and arithmetics", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        z = (x + 6) * 4;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr ( (expr (expr x) + (expr 6)) )) * (expr 4))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of parenthesis and unary operators", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        z = -(x + 6) * 4;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr - (expr ( (expr (expr x) + (expr 6)) ))) * (expr 4))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of parenthesis and dereference", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        z = *(&x + 6) * 4;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr * (expr ( (expr (expr & (expr x)) + (expr 6)) ))) * (expr 4))";
   std::string tree = ParserHelper::parsetree(stream);
   REQUIRE(tree.find(expected) != std::string::npos);
 }
