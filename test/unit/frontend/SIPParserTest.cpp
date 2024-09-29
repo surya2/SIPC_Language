@@ -626,6 +626,40 @@ TEST_CASE("SIP Parser: precedence of boolean operators", "[SIP Parser]")
   REQUIRE(tree.find(expected) != std::string::npos);
 }
 
+TEST_CASE("SIP Parser: precedence of boolean unary and binary operators 1", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y, z;
+        x = true;
+        y = false;
+        z = not x and y or x;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr (expr not (expr x)) and (expr y)) or (expr x))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of boolean unary and binary operators 2", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y, z;
+        x = true;
+        y = false;
+        z = x and not y or x;
+        return z;
+      }
+    )";
+  std::string expected = "(expr (expr (expr x) and (expr not (expr y))) or (expr x))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
 TEST_CASE("SIP Parser: precedence of arithmetic operators with modulo", "[SIP Parser]")
 {
   std::stringstream stream;
@@ -669,6 +703,19 @@ TEST_CASE("SIP Parser: precedence of relational operators with ternary condition
       }
     )";
   std::string expected = "(expr (expr (expr x) > (expr y)) ? (expr x) : (expr (expr (expr y) > (expr 1)) ? (expr y) : (expr x)))";
+  std::string tree = ParserHelper::parsetree(stream);
+  REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+TEST_CASE("SIP Parser: precedence of relational operators with ternary condition expression involving double nested if", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        z = x > y ? y > 1 ? y : x : 0;
+      }
+    )";
+  std::string expected = "(expr (expr x) > (expr y)) ? (expr (expr (expr y) > (expr 1)) ? (expr y) : (expr x)) : (expr 0))";
   std::string tree = ParserHelper::parsetree(stream);
   REQUIRE(tree.find(expected) != std::string::npos);
 }
