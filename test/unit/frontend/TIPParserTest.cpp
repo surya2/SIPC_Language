@@ -169,6 +169,26 @@ TEST_CASE("TIP Parser: address of field access", "[TIP Parser]")
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
+TEST_CASE("TIP Lexer: comparison token", "[TIP Lexer]")
+{
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; if (x <= 0) x = x + 1; return x; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("TIP Lexer: operator token", "[TIP Lexer]")
+{
+  std::stringstream stream;
+  stream << R"(
+      operators() { var x; if (x == 0) x = x % 2; return x; }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
 /* These tests checks for operator precedence.
  * They access the parse tree and ensure that the higher precedence
  * operator is nested more deeply than the lower precedence operator.
@@ -290,26 +310,6 @@ TEST_CASE("TIP Parser: keywords as ids", "[TIP Parser]")
     )";
 
   REQUIRE_FALSE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("TIP Lexer: illegal comparison token", "[TIP Lexer]")
-{
-  std::stringstream stream;
-  stream << R"(
-      operators() { var x; if (x <= 0) x = x + 1; return x; }
-    )";
-
-  REQUIRE(ParserHelper::is_parsable(stream));
-}
-
-TEST_CASE("TIP Lexer: illegal operator token", "[TIP Lexer]")
-{
-  std::stringstream stream;
-  stream << R"(
-      operators() { var x; if (x == 0) x = x % 2; return x; }
-    )";
-
-  REQUIRE(ParserHelper::is_parsable(stream));
 }
 
 TEST_CASE("TIP Lexer: illegal identifier token", "[TIP Lexer]")

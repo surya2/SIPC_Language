@@ -83,7 +83,7 @@ statement : blockStmt
 
 unaryStmt : expr (INC | DEC) ';' ;
 
-assignStmt : expr '=' expr ';' ;
+assignStmt : expr ('=' | '+=' | '-=' | '*=' | '/=' | '%=') expr ';' ;
 
 blockStmt : '{' (statement*) (returnStmt)? '}' ;
 
@@ -101,7 +101,7 @@ errorStmt : KERROR expr ';'  ;
 
 returnStmt : KRETURN expr ';'  ;
 
-array : '[' ( expr ( ',' expr )* )? ']' ;
+array : '[' ( expr (( ',' expr )* | 'of' expr ) )? ']' ;
 
 ////////////////////// TIP Lexicon ////////////////////////// 
 

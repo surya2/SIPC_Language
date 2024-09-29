@@ -174,7 +174,35 @@ TEST_CASE("SIP Parser: boolean or operator two ors", "[SIP Parser]")
  * Array instantiation and reference tests
  * -----------------------------------------------------------------------------------------------------
  */
-TEST_CASE("SIP Parser: array assignment", "[SIP Parser]")
+TEST_CASE("SIP Parser: array empty", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x;
+        x=[];
+        return 0;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: array assignment with single element", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x;
+        x=[1];
+        return 0;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: array assignment with multiple elements", "[SIP Parser]")
 {
   std::stringstream stream;
   stream << R"(
@@ -224,6 +252,49 @@ TEST_CASE("SIP Parser: array assignment with arrays", "[SIP Parser]")
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
+TEST_CASE("SIP Parser: array assignment as matrix", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x;
+        x=[[1,2,3],[4,5,6,10],[7,8,9],[10,11,12]];
+        return 0;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: array assignment with of notation", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x;
+        x=[1 of 3];
+        return 0;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: array assignment with of notation and identifiers", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        y = 3;
+        x=[y of 10];
+        return 0;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
 TEST_CASE("SIP Parser: array reference", "[SIP Parser]")
 {
   std::stringstream stream;
@@ -254,14 +325,15 @@ TEST_CASE("SIP Parser: array reference nontrivial", "[SIP Parser]")
   REQUIRE(ParserHelper::is_parsable(stream));
 }
 
-TEST_CASE("SIP Parser: array empty", "[SIP Parser]")
+TEST_CASE("SIP Parser: array reference assignment", "[SIP Parser]")
 {
   std::stringstream stream;
   stream << R"(
       short() {
-        var x;
-        x=[];
-        return 0;
+        var x, y;
+        x=[1,2,3];
+        x[2] = 3;
+        return x;
       }
     )";
 
@@ -718,4 +790,294 @@ TEST_CASE("SIP Parser: precedence of relational operators with ternary condition
   std::string expected = "(expr (expr x) > (expr y)) ? (expr (expr (expr y) > (expr 1)) ? (expr y) : (expr x)) : (expr 0))";
   std::string tree = ParserHelper::parsetree(stream);
   REQUIRE(tree.find(expected) != std::string::npos);
+}
+
+/*
+ * -----------------------------------------------------------------------------------------------------
+ * Test of scenarios that should resolved to false parsing
+ * -----------------------------------------------------------------------------------------------------
+ */
+TEST_CASE("SIP Parser: Incorrect array construction", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x;
+        x = {1, 2, 3};
+        return z;
+      }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: Incorrect increment position", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y, z;
+        x = 0;
+        y = 10;
+        for(i : x .. y by 2) {
+          ++z;
+        }
+        return z;
+      }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: Incorrect decrement position", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y, z;
+        x = 10;
+        while(x > 0) {
+          --x;
+        }
+        return x;
+      }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: Incomplete ternary operator", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y, z;
+        x = 3;
+        y = 2;
+        z = x > y ? x;
+        return z;
+      }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: Invalid boolean expression", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y, z;
+        x = true;
+        y = false;
+        z = not or x and y;
+        return z;
+      }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: Unclosed for loop", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var i, x, y, z;
+        x = 0;
+        y = 10;
+        for i : x .. y by 2 {
+          z = z + i;
+        }
+        return z;
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: Invalid unary not operator 1", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var y;
+        y = true;
+        return !y;
+    )";
+  REQUIRE_THROWS_MATCHES(FrontEnd::parse(stream), ParseError,
+                         ContainsWhat("token recognition error"));
+}
+
+TEST_CASE("SIP Parser: Invalid unary not operator 2", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var y;
+        y = 34;
+        return ~y;
+    )";
+  REQUIRE_THROWS_MATCHES(FrontEnd::parse(stream), ParseError,
+                         ContainsWhat("token recognition error"));
+}
+
+TEST_CASE("SIP Parser: Invalid binary operator ", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 2;
+        y = 3;
+        return 2^3;
+    )";
+  REQUIRE_THROWS_MATCHES(FrontEnd::parse(stream), ParseError,
+                         ContainsWhat("token recognition error"));
+}
+
+TEST_CASE("SIP Parser: Unclosed for loop 1", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var i, x, y, z;
+        x = 0;
+        y = 10;
+        for i : x .. y by 2 {
+          z = z + i;
+        }
+        return z;
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: Semi-closed for loop", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var i, x, y, z;
+        x = 0;
+        y = 10;
+        for (i : x .. y by 2 {
+          z = z + i;
+        }
+        return z;
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+/*
+ * -----------------------------------------------------------------------------------------------------
+ * Tests for additional features implemented (+=, -=, *=, /=, and premature return)
+ * -----------------------------------------------------------------------------------------------------
+ */
+TEST_CASE("SIP Parser: Increment assignment operator", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 3;
+        x += 2;
+        return x;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: Decrement assignment operator", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 3;
+        x -= 2;
+        return x;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: Multiply assignment operator", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 3;
+        x *= 2;
+        return x;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: Divide assignment operator", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 3;
+        x /= 2;
+        return x;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: Illegal assignment statement", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = 3;
+        x = x += 2;
+        return x;
+      }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: Premature return in conditional", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        if (y > x) {
+          x = y;
+          return y;
+        }
+        return x;
+      }
+    )";
+
+  REQUIRE(ParserHelper::is_parsable(stream));
+}
+
+TEST_CASE("SIP Parser: Illegal premature return", "[SIP Parser]")
+{
+  std::stringstream stream;
+  stream << R"(
+      short() {
+        var x, y;
+        x = y;
+        return y;
+        y += 1;
+        return x;
+      }
+    )";
+
+  REQUIRE_FALSE(ParserHelper::is_parsable(stream));
 }
