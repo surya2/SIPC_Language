@@ -47,9 +47,9 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr
      | expr op=(ADD | SUB) expr 		#additiveExpr
      | expr op=(GT | LT | GTE | LTE) expr 				#relationalExpr
-     | expr op=(EQ | NE) expr 			#equalityExpr
      | expr AND expr            #andExpr
      | expr OR expr             #orExpr
+     | expr op=(EQ | NE) expr 			#equalityExpr
      | <assoc=right> expr op=TIF expr op=TELSE expr #ternaryExpr
      | (KTRUE | KFALSE)           #booleanExpr
      | IDENTIFIER				#varExpr
