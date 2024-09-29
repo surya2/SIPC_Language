@@ -29,6 +29,8 @@ After testing these simple applications, multiple simple applications were combi
 
 - Unary Operators
   - _E++_ and _E--_ have equal precedence and requires higher precedence compared to arithmetic and boolean operators due to a situation like _x++ / 2_ in which _x_ must be incremented and assigned to itself before being divided by another expression.
+  - _#E_ has a relatively higher precedence compared to binary operators given that a scenario like _#x + 2_ can arise in which the _#x_ should be computed first.
+  - _x[E]_ has a relatively higher precedence compared to binary operators for the same reason as _#E_ given that a scenario like _x[E] + 2_ can arise in which _x[E]_ should be evaluated first.
   - _not x_ and _-2_ or _-x_ which all have roughly equal precedence.
 - Binary Operators
   - Arithmetic Operators: As multiplication, division, and modulo (division but result as the remainder) are all the same precedence and included in the same line in the ANTLR grammar. Following this is subtraction and addition which have a lower order of operation.
@@ -51,7 +53,7 @@ The below types of complex expressions were tested for parseability to validate 
 - _x+2 <= y\*3_
 - _z = x+2 ? x > y : y+2_
 
-Additionally, order precedence was tested with greater integrity with a series of 20 expected parse tree tests in which the below expressions were inputted to the parser and the output was checked against an expected output in the parse tree:
+Additionally, order precedence was tested with greater integrity with a series of 20 expected parse tree tests in which the below expressions are examples inputted to the parser (refer to the 'Operator precedence and parse tree expected result tests' section in SIPParserTest.cpp to view more tests) and the output was checked against an expected output in the parse tree:
 
 - _z = x and y or x_
 - _z = not x and y or x_
