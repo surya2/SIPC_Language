@@ -34,3 +34,4 @@
 #include "ASTStmt.h"
 #include "ASTVariableExpr.h"
 #include "ASTWhileStmt.h"
+#include "ASTForLoopStmt.h"

@@ -20,7 +20,8 @@
  * by overridden methods to communicate information along the traversal to
  * future method invocations.
  */
-class ASTVisitor {
+class ASTVisitor
+{
 public:
   virtual bool visit(ASTProgram *element) { return true; }
   virtual void endVisit(ASTProgram *element) {}
@@ -58,6 +59,8 @@ public:
   virtual void endVisit(ASTAssignStmt *element) {}
   virtual bool visit(ASTWhileStmt *element) { return true; }
   virtual void endVisit(ASTWhileStmt *element) {}
+  virtual bool visit(ASTForLoopStmt *element) { return true; }
+  virtual void endVisit(ASTForLoopStmt *element) {}
   virtual bool visit(ASTIfStmt *element) { return true; }
   virtual void endVisit(ASTIfStmt *element) {}
   virtual bool visit(ASTOutputStmt *element) { return true; }

@@ -18,7 +18,8 @@ using namespace antlrcpp;
  * of the parse tree and, if succesful, generates a shared ASTProgram whose
  * ownership is transferred to the caller.
  */
-class ASTBuilder : public TIPBaseVisitor {
+class ASTBuilder : public TIPBaseVisitor
+{
 private:
   TIPParser *parser;
   std::string opString(int op);
@@ -37,7 +38,8 @@ public:
   /**
    * a helper function to build binary expressions
    */
-  template <typename T> void visitBinaryExpr(T *ctx, const std::string &op);
+  template <typename T>
+  void visitBinaryExpr(T *ctx, const std::string &op);
 
   Any visitFunction(TIPParser::FunctionContext *ctx) override;
   Any visitNegNumber(TIPParser::NegNumberContext *ctx) override;
@@ -45,6 +47,8 @@ public:
   Any visitRelationalExpr(TIPParser::RelationalExprContext *ctx) override;
   Any visitMultiplicativeExpr(
       TIPParser::MultiplicativeExprContext *ctx) override;
+  Any visitOrExpr(TIPParser::OrExprContext *ctx) override;
+  Any visitAndExpr(TIPParser::AndExprContext *ctx) override;
   Any visitEqualityExpr(TIPParser::EqualityExprContext *ctx) override;
   Any visitParenExpr(TIPParser::ParenExprContext *ctx) override;
   Any visitNumExpr(TIPParser::NumExprContext *ctx) override;
@@ -63,6 +67,7 @@ public:
   Any visitAssignStmt(TIPParser::AssignStmtContext *ctx) override;
   Any visitBlockStmt(TIPParser::BlockStmtContext *ctx) override;
   Any visitWhileStmt(TIPParser::WhileStmtContext *ctx) override;
+  Any visitForStmt(TIPParser::ForStmtContext *ctx) override;
   Any visitIfStmt(TIPParser::IfStmtContext *ctx) override;
   Any visitOutputStmt(TIPParser::OutputStmtContext *ctx) override;
   Any visitErrorStmt(TIPParser::ErrorStmtContext *ctx) override;
