@@ -38,19 +38,19 @@ nameDeclaration : IDENTIFIER ;
 //
 expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
-     | expr (INC | DEC)         #unaryIncDecExpr
+     | expr op=(INC | DEC)         #unaryIncDecExpr
      | '*' expr 				#deRefExpr
      | IDENTIFIER '[' expr ']'  #arrayRefExpr
      | LEN expr                 #lenExpr
      | SUB NUMBER				#negNumber
-     | NOT expr                 #notExpr
+     | op=NOT expr                 #notExpr
      | prefix=SUB expr        #negNumExpr
      | '&' expr					#refExpr
      | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr
      | expr op=(ADD | SUB) expr 		#additiveExpr
      | expr op=(GT | LT | GTE | LTE) expr 				#relationalExpr
-     | expr AND expr            #andExpr
-     | expr OR expr             #orExpr
+     | expr op=AND expr            #andExpr
+     | expr op=OR expr             #orExpr
      | expr op=(EQ | NE) expr 			#equalityExpr
      | <assoc=right> expr op=TIF expr op=TELSE expr #ternaryExpr
      | (KTRUE | KFALSE)           #booleanExpr
