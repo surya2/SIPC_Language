@@ -26,6 +26,7 @@
 #include "ASTNode.h"
 #include "ASTNullExpr.h"
 #include "ASTNumberExpr.h"
+#include "ASTBooleanExpr.h"
 #include "ASTOutputStmt.h"
 #include "ASTProgram.h"
 #include "ASTRecordExpr.h"

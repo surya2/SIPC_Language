@@ -52,6 +52,7 @@ public:
   Any visitEqualityExpr(TIPParser::EqualityExprContext *ctx) override;
   Any visitParenExpr(TIPParser::ParenExprContext *ctx) override;
   Any visitNumExpr(TIPParser::NumExprContext *ctx) override;
+  Any visitBooleanExpr(TIPParser::BooleanExprContext *ctx) override;
   Any visitVarExpr(TIPParser::VarExprContext *ctx) override;
   Any visitInputExpr(TIPParser::InputExprContext *ctx) override;
   Any visitFunAppExpr(TIPParser::FunAppExprContext *ctx) override;

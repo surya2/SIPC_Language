@@ -267,6 +267,24 @@ Any ASTBuilder::visitNumExpr(TIPParser::NumExprContext *ctx)
   return "";
 } // LCOV_EXCL_LINE
 
+Any ASTBuilder::visitBooleanExpr(TIPParser::BooleanExprContext *ctx)
+{
+  bool val;
+  if (ctx->KTRUE() != nullptr)
+    val = true;
+  else
+    val = false;
+
+  visitedExpr = std::make_shared<ASTBooleanExpr>(val);
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+} // LCOV_EXCL_LINE
+
 Any ASTBuilder::visitVarExpr(TIPParser::VarExprContext *ctx)
 {
   std::string name = ctx->IDENTIFIER()->getText();
