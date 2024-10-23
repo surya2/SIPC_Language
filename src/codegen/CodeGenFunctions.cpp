@@ -452,6 +452,14 @@ llvm::Value *ASTNumberExpr::codegen()
                                 getValue());
 } // LCOV_EXCL_LINE
 
+llvm::Value *ASTBooleanExpr::codegen()
+{
+  LOG_S(1) << "Generating code for " << *this;
+
+  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
+                                getValue());
+} // LCOV_EXCL_LINE
+
 llvm::Value *ASTBinaryExpr::codegen()
 {
   LOG_S(1) << "Generating code for " << *this;
@@ -1019,6 +1027,14 @@ llvm::Value *ASTWhileStmt::codegen()
  * Implement later...
  */
 llvm::Value *ASTForLoopStmt::codegen()
+{
+  LOG_S(1) << "Generating code for " << *this;
+
+  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
+                                2);
+} // LCOV_EXCL_LINE
+
+llvm::Value *ASTTernaryExpr::codegen()
 {
   LOG_S(1) << "Generating code for " << *this;
 

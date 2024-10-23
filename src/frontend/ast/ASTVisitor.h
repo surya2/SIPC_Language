@@ -29,6 +29,8 @@ public:
   virtual void endVisit(ASTFunction *element) {}
   virtual bool visit(ASTNumberExpr *element) { return true; }
   virtual void endVisit(ASTNumberExpr *element) {}
+  virtual bool visit(ASTBooleanExpr *element) { return true; }
+  virtual void endVisit(ASTBooleanExpr *element) {}
   virtual bool visit(ASTVariableExpr *element) { return true; }
   virtual void endVisit(ASTVariableExpr *element) {}
   virtual bool visit(ASTBinaryExpr *element) { return true; }
@@ -65,6 +67,8 @@ public:
   virtual void endVisit(ASTForLoopStmt *element) {}
   virtual bool visit(ASTIterStmt *element) { return true; }
   virtual void endVisit(ASTIterStmt *element) {}
+  virtual bool visit(ASTTernaryExpr *element) { return true; }
+  virtual void endVisit(ASTTernaryExpr *element) {}
   virtual bool visit(ASTIfStmt *element) { return true; }
   virtual void endVisit(ASTIfStmt *element) {}
   virtual bool visit(ASTOutputStmt *element) { return true; }

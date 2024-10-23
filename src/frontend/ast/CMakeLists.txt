@@ -43,6 +43,8 @@ target_sources(
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTNullExpr.h
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTNumberExpr.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTNumberExpr.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTBooleanExpr.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTBooleanExpr.h
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTOutputStmt.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTOutputStmt.h
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTProgram.cpp
@@ -62,6 +64,8 @@ target_sources(
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTForLoopStmt.h
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTIterStmt.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTIterStmt.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTTernaryExpr.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTTernaryExpr.h
           ${CMAKE_CURRENT_SOURCE_DIR}/ASTVisitor.h
           ${CMAKE_CURRENT_SOURCE_DIR}/ASTBuilder.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/ASTBuilder.h

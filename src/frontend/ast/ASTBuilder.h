@@ -58,6 +58,7 @@ public:
   Any visitEqualityExpr(TIPParser::EqualityExprContext *ctx) override;
   Any visitParenExpr(TIPParser::ParenExprContext *ctx) override;
   Any visitNumExpr(TIPParser::NumExprContext *ctx) override;
+  Any visitBooleanExpr(TIPParser::BooleanExprContext *ctx) override;
   Any visitVarExpr(TIPParser::VarExprContext *ctx) override;
   Any visitInputExpr(TIPParser::InputExprContext *ctx) override;
   Any visitFunAppExpr(TIPParser::FunAppExprContext *ctx) override;
@@ -75,6 +76,7 @@ public:
   Any visitWhileStmt(TIPParser::WhileStmtContext *ctx) override;
   Any visitForStmt(TIPParser::ForStmtContext *ctx) override;
   Any visitIterStmt(TIPParser::IterStmtContext *ctx) override;
+  Any visitTernaryExpr(TIPParser::TernaryExprContext *ctx) override;
   Any visitIfStmt(TIPParser::IfStmtContext *ctx) override;
   Any visitOutputStmt(TIPParser::OutputStmtContext *ctx) override;
   Any visitErrorStmt(TIPParser::ErrorStmtContext *ctx) override;

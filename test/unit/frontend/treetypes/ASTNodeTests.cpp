@@ -484,6 +484,25 @@ TEST_CASE("ASTIfStmtTest: No else.",
    REQUIRE(stmt->getElse() == nullptr);
 }
 
+TEST_CASE("ASTTernaryExprTest: default",
+          "[ASTNodes]")
+{
+   std::stringstream stream;
+   stream << R"(
+      foo(c) {
+         var x, y, z;
+         x = 7;
+         y = 8;
+         z = 9;
+         return x > 5 ? y : z;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto ternaryExpr = ASTHelper::find_node<ASTTernaryExpr>(ast);
+   REQUIRE(ternaryExpr != nullptr);
+}
+
 TEST_CASE("ASTInputExprTest: Test methods of AST subtype.",
           "[ASTNodes]")
 {
@@ -530,6 +549,22 @@ TEST_CASE("ASTNumberExprTest: Test methods of AST subtype.",
    auto expr = ASTHelper::find_node<ASTNumberExpr>(ast);
 
    REQUIRE(expr->getValue() == 13);
+}
+
+TEST_CASE("ASTBooleanExprTest: Test methods of AST subtype.",
+          "[ASTNodes]")
+{
+   std::stringstream stream;
+   stream << R"(
+      foo() {
+         return false;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTBooleanExpr>(ast);
+
+   REQUIRE(expr->getValue() == false);
 }
 
 TEST_CASE("ASTOutputStmtTest: Test methods of AST subtype.",
