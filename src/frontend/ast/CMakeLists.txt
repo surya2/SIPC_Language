@@ -15,6 +15,8 @@ target_sources(
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTAssignStmt.h
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTBinaryExpr.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTBinaryExpr.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTUnaryExpr.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTUnaryExpr.h
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTBlockStmt.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTBlockStmt.h
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTDeRefExpr.cpp

@@ -541,3 +541,91 @@ TEST_CASE("ASTIterStmtTest: Test methods of AST subtype.",
    std::cout << o5.str() << std::endl;
    REQUIRE(o5.str() == "{ i = (i+(y-1)); }");
 }
+
+TEST_CASE("ASTIncTest: Test methods of AST subtype.",
+          "[ASTNodes]")
+{
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var y;
+         y = 2;
+         i=y++;
+         return y;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTUnaryExpr>(ast);
+
+   std::stringstream o1;
+   o1 << *expr->getExpr();
+   // std::cout << *stmt->getVar() << std::endl;
+   REQUIRE(o1.str() == "y");
+}
+
+TEST_CASE("ASTDecTest: Test methods of AST subtype.",
+          "[ASTNodes]")
+{
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var y;
+         y = 2;
+         i=x--;
+         return y;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTUnaryExpr>(ast);
+
+   std::stringstream o1;
+   o1 << *expr->getExpr();
+   // std::cout << *stmt->getVar() << std::endl;
+   REQUIRE(o1.str() == "x");
+}
+
+TEST_CASE("ASTNotTest: Test methods of AST subtype.",
+          "[ASTNodes]")
+{
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var y;
+         y = 2;
+         x = not y;
+         return y;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTUnaryExpr>(ast);
+
+   std::stringstream o1;
+   o1 << *expr->getExpr();
+   // std::cout << *stmt->getVar() << std::endl;
+   REQUIRE(o1.str() == "y");
+}
+
+TEST_CASE("ASTNegationTest: Test methods of AST subtype.",
+          "[ASTNodes]")
+{
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var y;
+         x = x + 3;
+         y = -x;
+         return y;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto expr = ASTHelper::find_node<ASTUnaryExpr>(ast);
+
+   std::stringstream o1;
+   o1 << *expr->getExpr();
+   // std::cout << *stmt->getVar() << std::endl;
+   REQUIRE(o1.str() == "x");
+}

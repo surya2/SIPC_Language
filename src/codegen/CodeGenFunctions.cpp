@@ -504,6 +504,17 @@ llvm::Value *ASTBinaryExpr::codegen()
 }
 
 /*
+ * Implement later...
+ */
+llvm::Value *ASTUnaryExpr::codegen()
+{
+  LOG_S(1) << "Generating code for " << *this;
+
+  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
+                                2);
+} // LCOV_EXCL_LINE
+
+/*
  * First lookup the variable in the symbol table for names and
  * if that fails, then look in the symbol table for functions.
  *
