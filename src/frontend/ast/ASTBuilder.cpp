@@ -40,7 +40,7 @@ std::string ASTBuilder::opString(int op)
     opStr = ">=";
     break;
   case TIPParser::LTE:
-    opStr = "<";
+    opStr = "<=";
     break;
   case TIPParser::EQ:
     opStr = "==";
