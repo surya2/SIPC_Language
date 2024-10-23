@@ -40,6 +40,7 @@ void ASTForLoopStmt::accept(ASTVisitor *visitor)
         {
             e->accept(visitor);
         }
+        getBody()->accept(visitor);
     }
     visitor->endVisit(this);
 }

@@ -61,6 +61,8 @@ public:
   virtual void endVisit(ASTWhileStmt *element) {}
   virtual bool visit(ASTForLoopStmt *element) { return true; }
   virtual void endVisit(ASTForLoopStmt *element) {}
+  virtual bool visit(ASTIterStmt *element) { return true; }
+  virtual void endVisit(ASTIterStmt *element) {}
   virtual bool visit(ASTIfStmt *element) { return true; }
   virtual void endVisit(ASTIfStmt *element) {}
   virtual bool visit(ASTOutputStmt *element) { return true; }

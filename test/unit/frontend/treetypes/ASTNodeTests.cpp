@@ -509,3 +509,35 @@ TEST_CASE("ASTForStmtTest: Test methods of AST subtype.",
    o5 << *stmt->getBody();
    REQUIRE(o5.str() == "{ x = (x-1); }");
 }
+
+TEST_CASE("ASTIterStmtTest: Test methods of AST subtype.",
+          "[ASTNodes]")
+{
+   std::stringstream stream;
+   stream << R"(
+      foo(x) {
+         var y, i;
+         for (y : x) {
+            i = i + (y - 1);
+         }
+         return i;
+      }
+    )";
+
+   auto ast = ASTHelper::build_ast(stream);
+   auto stmt = ASTHelper::find_node<ASTIterStmt>(ast);
+
+   std::stringstream o1;
+   o1 << *stmt->getElement();
+   // std::cout << *stmt->getVar() << std::endl;
+   REQUIRE(o1.str() == "y");
+   std::stringstream o2;
+   o2 << *stmt->getIterable();
+   // std::cout << *stmt->getStart() << std::endl;
+   REQUIRE(o2.str() == "x");
+
+   std::stringstream o5;
+   o5 << *stmt->getBody();
+   std::cout << o5.str() << std::endl;
+   REQUIRE(o5.str() == "{ i = (i+(y-1)); }");
+}

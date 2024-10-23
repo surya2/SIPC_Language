@@ -509,6 +509,26 @@ Any ASTBuilder::visitForStmt(TIPParser::ForStmtContext *ctx)
   return "";
 }
 
+Any ASTBuilder::visitIterStmt(TIPParser::IterStmtContext *ctx)
+{
+  std::vector<std::shared_ptr<ASTExpr>> fExprs;
+  for (auto e : ctx->expr())
+  {
+    visit(e);
+    fExprs.push_back(visitedExpr);
+  }
+  visit(ctx->statement());
+  auto body = visitedStmt;
+  visitedStmt = std::make_shared<ASTIterStmt>(fExprs[0], fExprs[1], body);
+
+  LOG_S(1) << "Built AST iteration loop " << *visitedStmt;
+
+  // Set source location
+  visitedStmt->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+}
+
 Any ASTBuilder::visitIfStmt(TIPParser::IfStmtContext *ctx)
 {
   visit(ctx->expr());
