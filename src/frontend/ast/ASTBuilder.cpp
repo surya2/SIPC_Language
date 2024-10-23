@@ -40,7 +40,7 @@ std::string ASTBuilder::opString(int op)
     opStr = ">=";
     break;
   case TIPParser::LTE:
-    opStr = "<";
+    opStr = "<=";
     break;
   case TIPParser::EQ:
     opStr = "==";
@@ -53,6 +53,15 @@ std::string ASTBuilder::opString(int op)
     break;
   case TIPParser::OR:
     opStr = "|";
+    break;
+  case TIPParser::NOT:
+    opStr = "!";
+    break;
+  case TIPParser::INC:
+    opStr = "++";
+    break;
+  case TIPParser::DEC:
+    opStr = "--";
     break;
   default:
     throw std::runtime_error(
@@ -192,6 +201,40 @@ Any ASTBuilder::visitNegNumber(TIPParser::NegNumberContext *ctx)
  * This might be improved by restructuring the grammar, but then another
  * mechanism for handling operator precedence would be needed.
  */
+
+template <typename T>
+void ASTBuilder::visitUnaryExpr(T *ctx, const std::string &op)
+{
+  visit(ctx->expr());
+  auto expr = visitedExpr;
+
+  visitedExpr = std::make_shared<ASTUnaryExpr>(op, expr);
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+}
+
+Any ASTBuilder::visitNegExpr(TIPParser::NegExprContext *ctx)
+{
+  visitUnaryExpr(ctx, opString(ctx->prefix->getType()));
+  return "";
+} // LCOV_EXCL_LINE
+
+Any ASTBuilder::visitNotExpr(TIPParser::NotExprContext *ctx)
+{
+  visitUnaryExpr(ctx, opString(ctx->op->getType()));
+  return "";
+} // LCOV_EXCL_LINE
+
+Any ASTBuilder::visitUnaryIncDecExpr(TIPParser::UnaryIncDecExprContext *ctx)
+{
+  visitUnaryExpr(ctx, opString(ctx->op->getType()));
+  return "";
+} // LCOV_EXCL_LINE
+
 template <typename T>
 void ASTBuilder::visitBinaryExpr(T *ctx, const std::string &op)
 {
@@ -543,6 +586,26 @@ Any ASTBuilder::visitTernaryExpr(TIPParser::TernaryExprContext *ctx)
   visitedExpr->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
 
+  return "";
+}
+
+Any ASTBuilder::visitIterStmt(TIPParser::IterStmtContext *ctx)
+{
+  std::vector<std::shared_ptr<ASTExpr>> fExprs;
+  for (auto e : ctx->expr())
+  {
+    visit(e);
+    fExprs.push_back(visitedExpr);
+  }
+  visit(ctx->statement());
+  auto body = visitedStmt;
+  visitedStmt = std::make_shared<ASTIterStmt>(fExprs[0], fExprs[1], body);
+
+  LOG_S(1) << "Built AST iteration loop " << *visitedStmt;
+
+  // Set source location
+  visitedStmt->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
   return "";
 }
 

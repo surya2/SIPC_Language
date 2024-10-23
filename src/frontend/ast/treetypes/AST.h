@@ -12,6 +12,7 @@
 #include "ASTAllocExpr.h"
 #include "ASTAssignStmt.h"
 #include "ASTBinaryExpr.h"
+#include "ASTUnaryExpr.h"
 #include "ASTBlockStmt.h"
 #include "ASTDeRefExpr.h"
 #include "ASTDeclNode.h"
@@ -36,4 +37,5 @@
 #include "ASTVariableExpr.h"
 #include "ASTWhileStmt.h"
 #include "ASTForLoopStmt.h"
+#include "ASTIterStmt.h"
 #include "ASTTernaryExpr.h"

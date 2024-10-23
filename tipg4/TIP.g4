@@ -44,7 +44,7 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | LEN expr                 #lenExpr
      | SUB NUMBER				#negNumber
      | op=NOT expr                 #notExpr
-     | prefix=SUB expr        #negNumExpr
+     | prefix=SUB expr        #negExpr
      | '&' expr					#refExpr
      | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr
      | expr op=(ADD | SUB) expr 		#additiveExpr

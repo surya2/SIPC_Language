@@ -41,8 +41,14 @@ public:
   template <typename T>
   void visitBinaryExpr(T *ctx, const std::string &op);
 
+  template <typename T>
+  void visitUnaryExpr(T *ctx, const std::string &op);
+
   Any visitFunction(TIPParser::FunctionContext *ctx) override;
   Any visitNegNumber(TIPParser::NegNumberContext *ctx) override;
+  Any visitNotExpr(TIPParser::NotExprContext *ctx) override;
+  Any visitNegExpr(TIPParser::NegExprContext *ctx) override;
+  Any visitUnaryIncDecExpr(TIPParser::UnaryIncDecExprContext *ctx) override;
   Any visitAdditiveExpr(TIPParser::AdditiveExprContext *ctx) override;
   Any visitRelationalExpr(TIPParser::RelationalExprContext *ctx) override;
   Any visitMultiplicativeExpr(
@@ -69,6 +75,7 @@ public:
   Any visitBlockStmt(TIPParser::BlockStmtContext *ctx) override;
   Any visitWhileStmt(TIPParser::WhileStmtContext *ctx) override;
   Any visitForStmt(TIPParser::ForStmtContext *ctx) override;
+  Any visitIterStmt(TIPParser::IterStmtContext *ctx) override;
   Any visitTernaryExpr(TIPParser::TernaryExprContext *ctx) override;
   Any visitIfStmt(TIPParser::IfStmtContext *ctx) override;
   Any visitOutputStmt(TIPParser::OutputStmtContext *ctx) override;
