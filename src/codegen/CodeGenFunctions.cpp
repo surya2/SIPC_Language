@@ -1015,6 +1015,14 @@ llvm::Value *ASTForLoopStmt::codegen()
                                 2);
 } // LCOV_EXCL_LINE
 
+llvm::Value *ASTTernaryExpr::codegen()
+{
+  LOG_S(1) << "Generating code for " << *this;
+
+  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
+                                2);
+} // LCOV_EXCL_LINE
+
 /*
  * The code generated for an IfStmt looks like this:
  *
