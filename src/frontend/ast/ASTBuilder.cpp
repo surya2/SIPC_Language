@@ -63,6 +63,9 @@ std::string ASTBuilder::opString(int op)
   case TIPParser::DEC:
     opStr = "--";
     break;
+  case TIPParser::LEN:
+    opStr = "#";
+    break;
   default:
     throw std::runtime_error(
         "unknown operator :" +
@@ -482,6 +485,85 @@ Any ASTBuilder::visitAccessExpr(TIPParser::AccessExprContext *ctx)
   // Set source location
   visitedExpr->setLocation(ctx->getStart()->getLine(),
                            ctx->getStart()->getCharPositionInLine());
+  return "";
+}
+
+Any ASTBuilder::visitArrayExpr(TIPParser::ArrayExprContext *ctx)
+{
+  std::vector<std::shared_ptr<ASTExpr>> exprs;
+  int arrayLength;
+  for (auto e : ctx->expr())
+  {
+    arrayLength++;
+    visit(e);
+    exprs.push_back(visitedExpr);
+  }
+
+  visitedExpr = std::make_shared<ASTArrayExpr>(exprs, arrayLength);
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+}
+
+Any ASTBuilder::visitArrayOfExpr(TIPParser::ArrayOfExprContext *ctx)
+{
+  std::vector<std::shared_ptr<ASTExpr>> exprs;
+  auto repeatedElement = ctx->expr(1);
+  auto lengthExpr = ctx->expr(0);
+  int arrayLength = -1;
+  visit(lengthExpr);
+  if (std::dynamic_pointer_cast<ASTNumberExpr>(visitedExpr))
+  {
+    arrayLength = std::dynamic_pointer_cast<ASTNumberExpr>(visitedExpr)->getValue();
+    visit(repeatedElement);
+    for (int i = 0; i < arrayLength; i++)
+    {
+      exprs.push_back(visitedExpr);
+    }
+    visitedExpr = std::make_shared<ASTArrayExpr>(exprs, arrayLength);
+  }
+  else
+  {
+    visit(lengthExpr);
+    auto lenExpr = visitedExpr;
+    visit(repeatedElement);
+    auto defaultExpr = visitedExpr;
+    visitedExpr = std::make_shared<ASTArrayOfExpr>(lenExpr, defaultExpr);
+  }
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+}
+
+Any ASTBuilder::visitArrayRefExpr(TIPParser::ArrayRefExprContext *ctx)
+{
+  visit(ctx->expr(0));
+  auto arrayExpr = visitedExpr;
+
+  visit(ctx->expr(1));
+  auto indexExpr = visitedExpr;
+
+  visitedExpr = std::make_shared<ASTArrayRefExpr>(arrayExpr, indexExpr);
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedExpr->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+}
+
+Any ASTBuilder::visitLenExpr(TIPParser::LenExprContext *ctx)
+{
+  visitUnaryExpr(ctx, opString(ctx->op->getType()));
   return "";
 }
 

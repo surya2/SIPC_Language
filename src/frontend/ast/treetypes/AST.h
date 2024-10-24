@@ -10,6 +10,9 @@
 
 #include "ASTAccessExpr.h"
 #include "ASTAllocExpr.h"
+#include "ASTArrayExpr.h"
+#include "ASTArrayOfExpr.h"
+#include "ASTArrayRefExpr.h"
 #include "ASTAssignStmt.h"
 #include "ASTBinaryExpr.h"
 #include "ASTUnaryExpr.h"

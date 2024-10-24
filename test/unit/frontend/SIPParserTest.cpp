@@ -910,8 +910,9 @@ TEST_CASE("SIP Parser: precedence of array reference", "[SIP Parser]")
         return z;
       }
     )";
-  std::string expected = "(expr (expr x [ (expr 3) ]) + (expr 4))";
+  std::string expected = "(expr (expr (expr x) [ (expr 3) ]) + (expr 4))";
   std::string tree = ParserHelper::parsetree(stream);
+  // std::cout << tree << std::endl;
   REQUIRE(tree.find(expected) != std::string::npos);
 }
 
@@ -928,8 +929,9 @@ TEST_CASE("SIP Parser: precedence of array expressions in array construction", "
         return z;
       }
     )";
-  std::string expected = "(array [ (expr (expr 2) + (expr 3)) , (expr (expr 4) * (expr 5)) , (expr (expr x) % (expr 6)) , (expr (expr z) / (expr y)) ])";
+  std::string expected = "(expr (arrayExpr [ (expr (expr 2) + (expr 3)) , (expr (expr 4) * (expr 5)) , (expr (expr x) % (expr 6)) , (expr (expr z) / (expr y)) ]))";
   std::string tree = ParserHelper::parsetree(stream);
+  // std::cout << tree << std::endl;
   REQUIRE(tree.find(expected) != std::string::npos);
 }
 

@@ -40,8 +40,8 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
      | expr op=(INC | DEC)         #unaryIncDecExpr
      | '*' expr 				#deRefExpr
-     | IDENTIFIER '[' expr ']'  #arrayRefExpr
-     | LEN expr                 #lenExpr
+     | expr '[' expr ']'           #arrayRefExpr
+     | op=LEN expr                 #lenExpr
      | SUB NUMBER				#negNumber
      | op=NOT expr                 #notExpr
      | prefix=SUB expr        #negExpr
@@ -61,12 +61,17 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | KNULL					#nullExpr
      | recordExpr				#recordRule
      | '(' expr ')'				#parenExpr
-     | array                    #arrayExpr
+     | arrayExpr                #arrayRule
+     | arrayOfExpr              #arrayOfRule
 ;
 
 recordExpr : '{' (fieldExpr (',' fieldExpr)*)? '}' ;
 
 fieldExpr : IDENTIFIER ':' expr ;
+
+arrayExpr : '[' (expr (',' expr )*)? ']' ;
+
+arrayOfExpr : '[' expr 'of' expr ']' ;
 
 ////////////////////// TIP Statements ////////////////////////// 
 
@@ -100,8 +105,6 @@ outputStmt : KOUTPUT expr ';'  ;
 errorStmt : KERROR expr ';'  ;
 
 returnStmt : KRETURN expr ';'  ;
-
-array : '[' ( expr (( ',' expr )* | 'of' expr ) )? ']' ;
 
 ////////////////////// TIP Lexicon ////////////////////////// 
 

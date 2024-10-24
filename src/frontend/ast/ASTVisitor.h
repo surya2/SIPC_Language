@@ -55,6 +55,12 @@ public:
   virtual void endVisit(ASTRecordExpr *element) {}
   virtual bool visit(ASTAccessExpr *element) { return true; }
   virtual void endVisit(ASTAccessExpr *element) {}
+  virtual bool visit(ASTArrayExpr *element) { return true; }
+  virtual void endVisit(ASTArrayExpr *element) {}
+  virtual bool visit(ASTArrayOfExpr *element) { return true; }
+  virtual void endVisit(ASTArrayOfExpr *element) {}
+  virtual bool visit(ASTArrayRefExpr *element) { return true; }
+  virtual void endVisit(ASTArrayRefExpr *element) {}
   virtual bool visit(ASTDeclNode *element) { return true; }
   virtual void endVisit(ASTDeclNode *element) {}
   virtual bool visit(ASTDeclStmt *element) { return true; }

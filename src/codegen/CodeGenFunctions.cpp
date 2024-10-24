@@ -871,6 +871,39 @@ llvm::Value *ASTAccessExpr::codegen()
       fieldLoad, llvm::Type::getInt64Ty(llvmContext), "fieldAccess");
 }
 
+/*
+ * Implement later...
+ */
+llvm::Value *ASTArrayExpr::codegen()
+{
+  LOG_S(1) << "Generating code for " << *this;
+
+  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
+                                2);
+} // LCOV_EXCL_LINE
+
+/*
+ * Implement later...
+ */
+llvm::Value *ASTArrayOfExpr::codegen()
+{
+  LOG_S(1) << "Generating code for " << *this;
+
+  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
+                                2);
+} // LCOV_EXCL_LINE
+
+/*
+ * Implement later...
+ */
+llvm::Value *ASTArrayRefExpr::codegen()
+{
+  LOG_S(1) << "Generating code for " << *this;
+
+  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
+                                2);
+} // LCOV_EXCL_LINE
+
 llvm::Value *ASTDeclNode::codegen()
 {
   throw InternalError("Declarations do not emit code");

@@ -49,6 +49,7 @@ public:
   Any visitNotExpr(TIPParser::NotExprContext *ctx) override;
   Any visitNegExpr(TIPParser::NegExprContext *ctx) override;
   Any visitUnaryIncDecExpr(TIPParser::UnaryIncDecExprContext *ctx) override;
+  Any visitLenExpr(TIPParser::LenExprContext *ctx) override;
   Any visitAdditiveExpr(TIPParser::AdditiveExprContext *ctx) override;
   Any visitRelationalExpr(TIPParser::RelationalExprContext *ctx) override;
   Any visitMultiplicativeExpr(
@@ -67,6 +68,9 @@ public:
   Any visitDeRefExpr(TIPParser::DeRefExprContext *ctx) override;
   Any visitNullExpr(TIPParser::NullExprContext *ctx) override;
   Any visitRecordExpr(TIPParser::RecordExprContext *ctx) override;
+  Any visitArrayExpr(TIPParser::ArrayExprContext *ctx) override;
+  Any visitArrayOfExpr(TIPParser::ArrayOfExprContext *ctx) override;
+  Any visitArrayRefExpr(TIPParser::ArrayRefExprContext *ctx) override;
   Any visitFieldExpr(TIPParser::FieldExprContext *ctx) override;
   Any visitAccessExpr(TIPParser::AccessExprContext *ctx) override;
   Any visitDeclaration(TIPParser::DeclarationContext *ctx) override;

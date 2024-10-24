@@ -4,7 +4,8 @@
 
 #include <iostream>
 
-TEST_CASE("ASTPrinterTest: output test", "[ASTNodePrint]") {
+TEST_CASE("ASTPrinterTest: output test", "[ASTNodePrint]")
+{
   std::stringstream stream;
   stream << R"(
       foo() { output 42; return 0; }
@@ -17,7 +18,8 @@ TEST_CASE("ASTPrinterTest: output test", "[ASTNodePrint]") {
   auto f = ast->findFunctionByName("foo");
 
   int i = 0;
-  for (auto s : f->getStmts()) {
+  for (auto s : f->getStmts())
+  {
     stream = std::stringstream();
     stream << *s;
     auto actual = stream.str();
@@ -25,7 +27,8 @@ TEST_CASE("ASTPrinterTest: output test", "[ASTNodePrint]") {
   }
 }
 
-TEST_CASE("ASTPrinterTest: function printers", "[ASTNodePrint]") {
+TEST_CASE("ASTPrinterTest: function printers", "[ASTNodePrint]")
+{
   std::stringstream stream;
   stream << R"(
       fun(a) { return a; }
@@ -39,7 +42,8 @@ TEST_CASE("ASTPrinterTest: function printers", "[ASTNodePrint]") {
   auto ast = ASTHelper::build_ast(stream);
 
   int i = 0;
-  for (auto f : ast->getFunctions()) {
+  for (auto f : ast->getFunctions())
+  {
     stream = std::stringstream();
     stream << *f;
     auto actual = stream.str();
@@ -47,7 +51,8 @@ TEST_CASE("ASTPrinterTest: function printers", "[ASTNodePrint]") {
   }
 }
 
-TEST_CASE("ASTPrinterTest: statement printers", "[ASTNodePrint]") {
+TEST_CASE("ASTPrinterTest: statement printers", "[ASTNodePrint]")
+{
   std::stringstream stream;
   stream << R"(
       fun() {
@@ -82,14 +87,16 @@ TEST_CASE("ASTPrinterTest: statement printers", "[ASTNodePrint]") {
   auto f = ast->findFunctionByName("fun");
 
   int i = 0;
-  for (auto d : f->getDeclarations()) {
+  for (auto d : f->getDeclarations())
+  {
     stream = std::stringstream();
     stream << *d;
     auto actual = stream.str();
     REQUIRE(actual == expected.at(i++));
   }
 
-  for (auto s : f->getStmts()) {
+  for (auto s : f->getStmts())
+  {
     stream = std::stringstream();
     stream << *s;
     auto actual = stream.str();
@@ -97,7 +104,8 @@ TEST_CASE("ASTPrinterTest: statement printers", "[ASTNodePrint]") {
   }
 }
 
-TEST_CASE("ASTPrinterTest: expression printers", "[ASTNodePrint]") {
+TEST_CASE("ASTPrinterTest: expression printers", "[ASTNodePrint]")
+{
   std::stringstream stream;
   stream << R"(
       foo(a) { return a;}
@@ -136,7 +144,8 @@ TEST_CASE("ASTPrinterTest: expression printers", "[ASTNodePrint]") {
 
   int i = 0;
   int numStmts = f->getStmts().size() - 1; // skip the return
-  for (auto s : f->getStmts()) {
+  for (auto s : f->getStmts())
+  {
     auto a = dynamic_cast<ASTAssignStmt *>(s);
     stream = std::stringstream();
     stream << *a->getRHS();
@@ -147,7 +156,8 @@ TEST_CASE("ASTPrinterTest: expression printers", "[ASTNodePrint]") {
   }
 }
 
-TEST_CASE("ASTPrinterTest: conditional expression printers", "[ASTNodePrint]") {
+TEST_CASE("ASTPrinterTest: conditional expression printers", "[ASTNodePrint]")
+{
   std::stringstream stream;
   stream << R"(
       fun() {
@@ -167,7 +177,8 @@ TEST_CASE("ASTPrinterTest: conditional expression printers", "[ASTNodePrint]") {
 
   int i = 0;
   int numStmts = f->getStmts().size() - 1; // skip the return
-  for (auto s : f->getStmts()) {
+  for (auto s : f->getStmts())
+  {
     auto ifstmt = dynamic_cast<ASTIfStmt *>(s);
     stream = std::stringstream();
     stream << *ifstmt->getCondition();
@@ -178,7 +189,8 @@ TEST_CASE("ASTPrinterTest: conditional expression printers", "[ASTNodePrint]") {
   }
 }
 
-TEST_CASE("ASTPrinterTest: local expr test", "[ASTNodePrint]") {
+TEST_CASE("ASTPrinterTest: local expr test", "[ASTNodePrint]")
+{
   auto zero = std::make_shared<ASTNumberExpr>(0);
   auto var = std::make_shared<ASTVariableExpr>("y");
 
@@ -192,7 +204,8 @@ TEST_CASE("ASTPrinterTest: local expr test", "[ASTNodePrint]") {
   REQUIRE(actual == "(y+0)");
 }
 
-TEST_CASE("ASTPrinterTest: local unique expr test", "[ASTNodePrint]") {
+TEST_CASE("ASTPrinterTest: local unique expr test", "[ASTNodePrint]")
+{
   auto zero = std::make_shared<ASTNumberExpr>(0);
   auto var = std::make_shared<ASTVariableExpr>("y");
 
@@ -208,7 +221,8 @@ TEST_CASE("ASTPrinterTest: local unique expr test", "[ASTNodePrint]") {
 }
 
 TEST_CASE("ASTPrinterTest: ASTProgram output is the hash of the source.",
-          "[ASTNodePrint]") {
+          "[ASTNodePrint]")
+{
   std::stringstream stream;
   stream << R"(
       foo(x) {
