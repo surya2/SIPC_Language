@@ -244,3 +244,5 @@ TEST_CASE("ASTPrinterTest: ASTProgram output is the hash of the source.",
   actualOutput << *ast;
   REQUIRE(expectedOutput == actualOutput.str());
 }
+
+// NEW SIPC TESTS

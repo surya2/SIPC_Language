@@ -518,6 +518,8 @@ TEST_CASE("ASTArrayRefTest: Test methods of AST subtype.",
   REQUIRE(o1.str() == "y");
 
   std::stringstream o2;
-  o2 << *expr->getIndex();
+  o2
+
+      << *expr->getIndex();
   REQUIRE(o2.str() == "4");
 }

@@ -6,7 +6,8 @@
 
 #include <iostream>
 
-TEST_CASE("PrettyPrinter: Test default constructor", "[PrettyPrinter]") {
+TEST_CASE("PrettyPrinter: Test default constructor", "[PrettyPrinter]")
+{
   std::stringstream stream;
   stream << R"(
       short() {
@@ -26,7 +27,8 @@ TEST_CASE("PrettyPrinter: Test default constructor", "[PrettyPrinter]") {
   REQUIRE(true);
 }
 
-TEST_CASE("PrettyPrinter: Test indentation", "[PrettyPrinter]") {
+TEST_CASE("PrettyPrinter: Test indentation", "[PrettyPrinter]")
+{
   std::stringstream stream;
   stream << R"(
       foo() {
@@ -96,7 +98,8 @@ TEST_CASE("PrettyPrinter: Test indentation", "[PrettyPrinter]") {
   REQUIRE(0 == std::count(token19.begin(), token19.end(), '#'));
 }
 
-TEST_CASE("PrettyPrinter: Test comment removal", "[PrettyPrinter]") {
+TEST_CASE("PrettyPrinter: Test comment removal", "[PrettyPrinter]")
+{
   std::stringstream stream;
   stream << R"(// comment
 prog() { var x, y, z; output x+y; return z; })";
@@ -117,7 +120,8 @@ prog() { var x, y, z; output x+y; return z; })";
   REQUIRE(ppString == expected);
 }
 
-TEST_CASE("PrettyPrinter: Test embedded comment removal", "[PrettyPrinter]") {
+TEST_CASE("PrettyPrinter: Test embedded comment removal", "[PrettyPrinter]")
+{
   std::stringstream stream;
   stream << R"(prog() { var x, /* comment */ y, z; output x+y; return z; })";
 
@@ -137,7 +141,8 @@ TEST_CASE("PrettyPrinter: Test embedded comment removal", "[PrettyPrinter]") {
   REQUIRE(ppString == expected);
 }
 
-TEST_CASE("PrettyPrinter: Test if print", "[PrettyPrinter]") {
+TEST_CASE("PrettyPrinter: Test if print", "[PrettyPrinter]")
+{
   std::stringstream stream;
   stream << R"(prog() { var x; if (x) output 0; else output 1; return 0; })";
 
@@ -160,7 +165,8 @@ TEST_CASE("PrettyPrinter: Test if print", "[PrettyPrinter]") {
   REQUIRE(ppString == expected);
 }
 
-TEST_CASE("PrettyPrinter: Test nested if print", "[PrettyPrinter]") {
+TEST_CASE("PrettyPrinter: Test nested if print", "[PrettyPrinter]")
+{
   std::stringstream stream;
   stream
       << R"(prog() { var x, y; if (x) if (y) output 0; else output 1; else output 2; return 0; })";
@@ -187,7 +193,8 @@ TEST_CASE("PrettyPrinter: Test nested if print", "[PrettyPrinter]") {
   REQUIRE(ppString == expected);
 }
 
-TEST_CASE("PrettyPrinter: Test paren expr", "[PrettyPrinter]") {
+TEST_CASE("PrettyPrinter: Test paren expr", "[PrettyPrinter]")
+{
   std::stringstream stream;
   stream << R"(prog() { var x, y; x = y * 3 + 4 - y; return 0; })";
 
@@ -207,7 +214,8 @@ TEST_CASE("PrettyPrinter: Test paren expr", "[PrettyPrinter]") {
   REQUIRE(ppString == expected);
 }
 
-TEST_CASE("PrettyPrinter: Test while spacing", "[PrettyPrinter]") {
+TEST_CASE("PrettyPrinter: Test while spacing", "[PrettyPrinter]")
+{
   std::stringstream stream;
   stream << R"(prog(){var x,y;while(y>0){x=x+y;y=y-1;}return x;})";
 
@@ -231,7 +239,8 @@ TEST_CASE("PrettyPrinter: Test while spacing", "[PrettyPrinter]") {
   REQUIRE(ppString == expected);
 }
 
-TEST_CASE("PrettyPrinter: Test funs and calls", "[PrettyPrinter]") {
+TEST_CASE("PrettyPrinter: Test funs and calls", "[PrettyPrinter]")
+{
   std::stringstream stream;
   stream
       << R"(fun(a){return a+1;}main() {output fun(9); return fun(1) + fun(2);})";
@@ -255,3 +264,5 @@ main()
   expected = GeneralHelper::removeTrailingWhitespace(expected);
   REQUIRE(ppString == expected);
 }
+
+// AST PRETTY PRINTER TESTS
