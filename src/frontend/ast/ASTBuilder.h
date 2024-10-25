@@ -49,6 +49,7 @@ public:
   Any visitNotExpr(TIPParser::NotExprContext *ctx) override;
   Any visitNegExpr(TIPParser::NegExprContext *ctx) override;
   Any visitUnaryIncDecExpr(TIPParser::UnaryIncDecExprContext *ctx) override;
+  Any visitUnaryStmt(TIPParser::UnaryStmtContext *ctx) override;
   Any visitLenExpr(TIPParser::LenExprContext *ctx) override;
   Any visitAdditiveExpr(TIPParser::AdditiveExprContext *ctx) override;
   Any visitRelationalExpr(TIPParser::RelationalExprContext *ctx) override;

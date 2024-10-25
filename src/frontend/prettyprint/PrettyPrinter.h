@@ -59,6 +59,7 @@ public:
   virtual void endVisit(ASTForLoopStmt *element) override;
   virtual bool visit(ASTIterStmt *element) override;
   virtual void endVisit(ASTIterStmt *element) override;
+  virtual void endVisit(ASTIncDecStmt *element) override;
   virtual bool visit(ASTIfStmt *element) override;
   virtual void endVisit(ASTIfStmt *element) override;
   virtual void endVisit(ASTTernaryExpr *element) override;

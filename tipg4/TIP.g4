@@ -86,7 +86,7 @@ statement : blockStmt
     | unaryStmt
 ;
 
-unaryStmt : expr (INC | DEC) ';' ;
+unaryStmt : expr op=(INC | DEC) ';' ;
 
 assignStmt : expr ('=' | '+=' | '-=' | '*=' | '/=' | '%=') expr ';' ;
 

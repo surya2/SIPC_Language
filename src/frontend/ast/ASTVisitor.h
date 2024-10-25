@@ -37,6 +37,8 @@ public:
   virtual void endVisit(ASTBinaryExpr *element) {}
   virtual bool visit(ASTUnaryExpr *element) { return true; }
   virtual void endVisit(ASTUnaryExpr *element) {}
+  virtual bool visit(ASTIncDecStmt *element) { return true; }
+  virtual void endVisit(ASTIncDecStmt *element) {}
   virtual bool visit(ASTInputExpr *element) { return true; }
   virtual void endVisit(ASTInputExpr *element) {}
   virtual bool visit(ASTFunAppExpr *element) { return true; }

@@ -339,3 +339,36 @@ TEST_CASE("ASTPrinterTest: iter statement", "[ASTNodePrint]")
       break;
   }
 }
+
+TEST_CASE("ASTPrinterTest: inc/dec statement", "[ASTNodePrint]")
+{
+  std::stringstream stream;
+  stream << R"(
+      fun(x) {
+         var y, i;
+         i++;
+         y--;
+         return i;
+      }
+    )";
+
+  std::vector<std::string> expected{
+      "i++;", "y--;"};
+
+  auto ast = ASTHelper::build_ast(stream);
+
+  auto f = ast->findFunctionByName("fun");
+
+  int i = 0;
+  int numStmts = 2;
+  for (auto s : f->getStmts())
+  {
+    auto incdecStmt = dynamic_cast<ASTIncDecStmt *>(s);
+    stream = std::stringstream();
+    stream << *incdecStmt;
+    auto actual = stream.str();
+    REQUIRE(actual == expected.at(i++));
+    if (i == numStmts)
+      break;
+  }
+}

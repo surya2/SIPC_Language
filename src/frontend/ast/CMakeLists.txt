@@ -70,6 +70,8 @@ target_sources(
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTForLoopStmt.h
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTIterStmt.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTIterStmt.h
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTIncDecStmt.cpp
+          ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTIncDecStmt.h
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTTernaryExpr.cpp
           ${CMAKE_CURRENT_SOURCE_DIR}/treetypes/ASTTernaryExpr.h
           ${CMAKE_CURRENT_SOURCE_DIR}/ASTVisitor.h

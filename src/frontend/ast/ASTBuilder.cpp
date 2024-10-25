@@ -771,6 +771,21 @@ Any ASTBuilder::visitAssignStmt(TIPParser::AssignStmtContext *ctx)
   return "";
 }
 
+Any ASTBuilder::visitUnaryStmt(TIPParser::UnaryStmtContext *ctx)
+{
+  visit(ctx->expr());
+  auto expr = visitedExpr;
+
+  visitedStmt = std::make_shared<ASTIncDecStmt>(opString(ctx->op->getType()), expr);
+
+  LOG_S(1) << "Built AST node " << *visitedExpr;
+
+  // Set source location
+  visitedStmt->setLocation(ctx->getStart()->getLine(),
+                           ctx->getStart()->getCharPositionInLine());
+  return "";
+} // LCOV_EXCL_LINE
+
 std::string ASTBuilder::generateSHA256(std::string tohash)
 {
   std::vector<unsigned char> hash(picosha2::k_digest_size);

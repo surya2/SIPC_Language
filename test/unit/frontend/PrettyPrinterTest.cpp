@@ -319,7 +319,7 @@ TEST_CASE("PrettyPrinter: Test unary operators", "[PrettyPrinter]")
 {
   std::stringstream stream;
   stream
-      << R"(fun(a, arr){var i, y;y=not y;y=-y+i;i=i--;i=#arr;return a++;})";
+      << R"(fun(a, arr){var i, y;y=not y;y=-y+i;i=i--;i=#arr;i--;y++;return a++;})";
 
   std::string expected = R"(fun(a, arr)
 {
@@ -328,6 +328,8 @@ TEST_CASE("PrettyPrinter: Test unary operators", "[PrettyPrinter]")
   y = ((-y) + i);
   i = (i--);
   i = (#arr);
+  i--;
+  y++;
   return (a++);
 }
 )";

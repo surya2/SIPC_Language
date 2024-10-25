@@ -520,3 +520,28 @@ TEST_CASE("ASTArrayRefTest: Test methods of AST subtype.",
   o2 << *expr->getIndex();
   REQUIRE(o2.str() == "4");
 }
+
+TEST_CASE("ASTIncDecStmtTest: Test methods of AST subtype.",
+          "[ASTNodes]")
+{
+  std::stringstream stream;
+  stream << R"(
+      foo(x) {
+         var y, i;
+         i++;
+         return y[4];
+      }
+    )";
+
+  auto ast = ASTHelper::build_ast(stream);
+  auto expr = ASTHelper::find_node<ASTIncDecStmt>(ast);
+
+  std::stringstream o1;
+  o1 << *expr->getExpr();
+  // std::cout << *stmt->getVar() << std::endl;
+  REQUIRE(o1.str() == "i");
+
+  std::stringstream o2;
+  o2 << expr->getOp();
+  REQUIRE(o2.str() == "++");
+}

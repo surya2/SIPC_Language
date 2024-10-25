@@ -246,6 +246,13 @@ void PrettyPrinter::endVisit(ASTAssignStmt *element)
   visitResults.push_back(indent() + lhsString + " = " + rhsString + ";");
 }
 
+void PrettyPrinter::endVisit(ASTIncDecStmt *element)
+{
+  std::string exprString = visitResults.back();
+  visitResults.pop_back();
+  visitResults.push_back(indent() + exprString + element->getOp() + ";");
+}
+
 bool PrettyPrinter::visit(ASTBlockStmt *element)
 {
   indentLevel++;

@@ -904,6 +904,17 @@ llvm::Value *ASTArrayRefExpr::codegen()
                                 2);
 } // LCOV_EXCL_LINE
 
+/*
+ * Implement later...
+ */
+llvm::Value *ASTIncDecStmt::codegen()
+{
+  LOG_S(1) << "Generating code for " << *this;
+
+  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
+                                2);
+} // LCOV_EXCL_LINE
+
 llvm::Value *ASTDeclNode::codegen()
 {
   throw InternalError("Declarations do not emit code");

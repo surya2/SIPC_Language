@@ -41,4 +41,5 @@
 #include "ASTWhileStmt.h"
 #include "ASTForLoopStmt.h"
 #include "ASTIterStmt.h"
+#include "ASTIncDecStmt.h"
 #include "ASTTernaryExpr.h"
