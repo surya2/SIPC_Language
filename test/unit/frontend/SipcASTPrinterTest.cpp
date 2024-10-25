@@ -137,15 +137,16 @@ TEST_CASE("ASTPrinterTest: of array", "[ASTNodePrint]")
   std::stringstream stream;
   stream << R"(
       fun() {
-      var x, y, z;
+      var x, y, z, i;
         y = [4 of i+x];
+        x = [y-z of z+i]
         return 0;
       }
     )";
 
   std::vector<std::string> expected{
       "[(i+x),(i+x),(i+x),(i+x)]",
-  };
+      "[(y-z) of (z+i)]"};
 
   auto ast = ASTHelper::build_ast(stream);
 
