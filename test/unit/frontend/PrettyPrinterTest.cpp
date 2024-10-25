@@ -239,6 +239,56 @@ TEST_CASE("PrettyPrinter: Test while spacing", "[PrettyPrinter]")
   REQUIRE(ppString == expected);
 }
 
+TEST_CASE("PrettyPrinter: Test for loop spacing", "[PrettyPrinter]")
+{
+  std::stringstream stream;
+  stream << R"(prog(){var x,y;for(i : 2 .. 10 by 2){x=x+y;y=y-1;}return x;})";
+
+  std::string expected = R"(prog()
+{
+  var x, y;
+  for (i : 2 .. 10 by 2)
+    {
+      x = (x + y);
+      y = (y - 1);
+    }
+  return x;
+}
+)";
+
+  std::stringstream pp;
+  auto ast = ASTHelper::build_ast(stream);
+  PrettyPrinter::print(ast.get(), pp, ' ', 2);
+  std::string ppString = GeneralHelper::removeTrailingWhitespace(pp.str());
+  expected = GeneralHelper::removeTrailingWhitespace(expected);
+  REQUIRE(ppString == expected);
+}
+
+TEST_CASE("PrettyPrinter: Test iter loop spacing", "[PrettyPrinter]")
+{
+  std::stringstream stream;
+  stream << R"(prog(){var x,y;for(i : x){x=x+y;y=y-1;}return x;})";
+
+  std::string expected = R"(prog()
+{
+  var x, y;
+  for (x : i)
+    {
+      x = (x + y);
+      y = (y - 1);
+    }
+  return x;
+}
+)";
+
+  std::stringstream pp;
+  auto ast = ASTHelper::build_ast(stream);
+  PrettyPrinter::print(ast.get(), pp, ' ', 2);
+  std::string ppString = GeneralHelper::removeTrailingWhitespace(pp.str());
+  expected = GeneralHelper::removeTrailingWhitespace(expected);
+  REQUIRE(ppString == expected);
+}
+
 TEST_CASE("PrettyPrinter: Test funs and calls", "[PrettyPrinter]")
 {
   std::stringstream stream;
@@ -254,6 +304,55 @@ main()
 {
   output fun(9);
   return (fun(1) + fun(2));
+}
+)";
+
+  std::stringstream pp;
+  auto ast = ASTHelper::build_ast(stream);
+  PrettyPrinter::print(ast.get(), pp, ' ', 2);
+  std::string ppString = GeneralHelper::removeTrailingWhitespace(pp.str());
+  expected = GeneralHelper::removeTrailingWhitespace(expected);
+  REQUIRE(ppString == expected);
+}
+
+TEST_CASE("PrettyPrinter: Test unary operators", "[PrettyPrinter]")
+{
+  std::stringstream stream;
+  stream
+      << R"(fun(a){var i, y;y=not y;y=-y+i;i=i--;return a++;})";
+
+  std::string expected = R"(fun(a)
+{
+  var i, y;
+  y = (!y);
+  y = ((-y) + i);
+  i = (i--);
+  return (a++);
+}
+)";
+
+  std::stringstream pp;
+  auto ast = ASTHelper::build_ast(stream);
+  PrettyPrinter::print(ast.get(), pp, ' ', 2);
+  std::string ppString = GeneralHelper::removeTrailingWhitespace(pp.str());
+  expected = GeneralHelper::removeTrailingWhitespace(expected);
+  REQUIRE(ppString == expected);
+}
+
+TEST_CASE("PrettyPrinter: Test array constructions and index references", "[PrettyPrinter]")
+{
+  std::stringstream stream;
+  stream
+      << R"(fun(a, t, j){var i, y, f;f=*j[6];y=[4, a+2, a%6, (i+4)/5+6];y[i]=-i;i=[t+5 of y[t-a+6%3]];return i[0];})";
+
+  std::string expected = R"(fun(a, t, j)
+{
+  var i, y, f;
+  f = *j[6];
+  y = [(((i + 4) / 5) + 6), (a % 6), (a + 2), 4];
+  y[i] = (-i);
+  i = [(t + 5) of y[((t - a) + (6 % 3))]];
+  return i[0];
 }
 )";
 
