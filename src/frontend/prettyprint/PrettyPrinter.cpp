@@ -187,23 +187,23 @@ void PrettyPrinter::endVisit(ASTAccessExpr *element)
 void PrettyPrinter::endVisit(ASTArrayExpr *element)
 {
   int len = element->getLen();
-  std::string arrayString = "[";
-  bool first = true;
+  std::string arrayString = "]";
+  bool last = true;
   for (int i = 0; i < len; i++)
   {
     std::string element = visitResults.back();
     visitResults.pop_back();
-    if (first)
+    if (last)
     {
-      first = false;
+      last = false;
+      arrayString = element + arrayString;
     }
     else
     {
-      arrayString += ", ";
+      arrayString = element + ", " + arrayString;
     }
-    arrayString += element;
   }
-  arrayString += "]";
+  arrayString = "[" + arrayString;
   visitResults.push_back(arrayString);
 }
 
@@ -390,6 +390,17 @@ void PrettyPrinter::endVisit(ASTIfStmt *element)
   }
 
   visitResults.push_back(ifString);
+}
+
+void PrettyPrinter::endVisit(ASTTernaryExpr *element)
+{
+  std::string falseString = visitResults.back();
+  visitResults.pop_back();
+  std::string trueString = visitResults.back();
+  visitResults.pop_back();
+  std::string conditionString = visitResults.back();
+  visitResults.pop_back();
+  visitResults.push_back(conditionString + " ? " + trueString + " : " + falseString);
 }
 
 void PrettyPrinter::endVisit(ASTOutputStmt *element)

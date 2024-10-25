@@ -319,14 +319,15 @@ TEST_CASE("PrettyPrinter: Test unary operators", "[PrettyPrinter]")
 {
   std::stringstream stream;
   stream
-      << R"(fun(a){var i, y;y=not y;y=-y+i;i=i--;return a++;})";
+      << R"(fun(a, arr){var i, y;y=not y;y=-y+i;i=i--;i=#arr;return a++;})";
 
-  std::string expected = R"(fun(a)
+  std::string expected = R"(fun(a, arr)
 {
   var i, y;
   y = (!y);
   y = ((-y) + i);
   i = (i--);
+  i = (#arr);
   return (a++);
 }
 )";
@@ -349,10 +350,33 @@ TEST_CASE("PrettyPrinter: Test array constructions and index references", "[Pret
 {
   var i, y, f;
   f = *j[6];
-  y = [(((i + 4) / 5) + 6), (a % 6), (a + 2), 4];
+  y = [4, (a + 2), (a % 6), (((i + 4) / 5) + 6)];
   y[i] = (-i);
   i = [(t + 5) of y[((t - a) + (6 % 3))]];
   return i[0];
+}
+)";
+
+  std::stringstream pp;
+  auto ast = ASTHelper::build_ast(stream);
+  PrettyPrinter::print(ast.get(), pp, ' ', 2);
+  std::string ppString = GeneralHelper::removeTrailingWhitespace(pp.str());
+  expected = GeneralHelper::removeTrailingWhitespace(expected);
+  REQUIRE(ppString == expected);
+}
+
+TEST_CASE("PrettyPrinter: Test ternary expressions", "[PrettyPrinter]")
+{
+  std::stringstream stream;
+  stream
+      << R"(fun(a, t){var i, y, f;i=a+2==t%5 ? a : t+a*j();y=t<=a*5-3 ? a>=t-4 ? y and f or not i : f*3 : 7+4%3;return i==y ? f : foo();})";
+
+  std::string expected = R"(fun(a, t)
+{
+  var i, y, f;
+  i = ((a + 2) == (t % 5)) ? a : (t + (a * j()));
+  y = (t <= ((a * 5) - 3)) ? (a >= (t - 4)) ? ((y & f) | (!i)) : (f * 3) : (7 + (4 % 3));
+  return (i == y) ? f : foo();
 }
 )";
 
