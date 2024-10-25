@@ -19,7 +19,8 @@
  * endVisit methods, and therefore uses a LIFO protocol for storing and
  * accessing values computed during the traversal, i.e., in visitResults.
  */
-class PrettyPrinter : public ASTVisitor {
+class PrettyPrinter : public ASTVisitor
+{
 public:
   PrettyPrinter() : os(std::cout), indentChar(' '), indentSize(2) {}
   PrettyPrinter(std::ostream &os, char indentChar, int indentSize)
@@ -31,8 +32,10 @@ public:
   virtual bool visit(ASTFunction *element) override;
   virtual void endVisit(ASTFunction *element) override;
   virtual void endVisit(ASTNumberExpr *element) override;
+  virtual void endVisit(ASTBooleanExpr *element) override;
   virtual void endVisit(ASTVariableExpr *element) override;
   virtual void endVisit(ASTBinaryExpr *element) override;
+  virtual void endVisit(ASTUnaryExpr *element) override;
   virtual void endVisit(ASTInputExpr *element) override;
   virtual void endVisit(ASTFunAppExpr *element) override;
   virtual void endVisit(ASTAllocExpr *element) override;
@@ -42,6 +45,9 @@ public:
   virtual void endVisit(ASTFieldExpr *element) override;
   virtual void endVisit(ASTRecordExpr *element) override;
   virtual void endVisit(ASTAccessExpr *element) override;
+  virtual void endVisit(ASTArrayExpr *element) override;
+  virtual void endVisit(ASTArrayOfExpr *element) override;
+  virtual void endVisit(ASTArrayRefExpr *element) override;
   virtual void endVisit(ASTDeclNode *element) override;
   virtual void endVisit(ASTDeclStmt *element) override;
   virtual void endVisit(ASTAssignStmt *element) override;
@@ -49,8 +55,14 @@ public:
   virtual void endVisit(ASTBlockStmt *element) override;
   virtual bool visit(ASTWhileStmt *element) override;
   virtual void endVisit(ASTWhileStmt *element) override;
+  virtual bool visit(ASTForLoopStmt *element) override;
+  virtual void endVisit(ASTForLoopStmt *element) override;
+  virtual bool visit(ASTIterStmt *element) override;
+  virtual void endVisit(ASTIterStmt *element) override;
+  virtual void endVisit(ASTIncDecStmt *element) override;
   virtual bool visit(ASTIfStmt *element) override;
   virtual void endVisit(ASTIfStmt *element) override;
+  virtual void endVisit(ASTTernaryExpr *element) override;
   virtual void endVisit(ASTOutputStmt *element) override;
   virtual void endVisit(ASTReturnStmt *element) override;
   virtual void endVisit(ASTErrorStmt *element) override;

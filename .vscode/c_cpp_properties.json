@@ -6,7 +6,8 @@
             "includePath": [
                 "${default}",
                 "${workspaceFolder}/build/_deps/catch2-src/src",
-                "${workspaceFolder}/test/unit/helpers"
+                "${workspaceFolder}/test/unit/helpers",
+                "/usr/include/llvm-17"
             ]
         }
     ],

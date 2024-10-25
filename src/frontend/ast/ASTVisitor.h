@@ -20,7 +20,8 @@
  * by overridden methods to communicate information along the traversal to
  * future method invocations.
  */
-class ASTVisitor {
+class ASTVisitor
+{
 public:
   virtual bool visit(ASTProgram *element) { return true; }
   virtual void endVisit(ASTProgram *element) {}
@@ -28,10 +29,16 @@ public:
   virtual void endVisit(ASTFunction *element) {}
   virtual bool visit(ASTNumberExpr *element) { return true; }
   virtual void endVisit(ASTNumberExpr *element) {}
+  virtual bool visit(ASTBooleanExpr *element) { return true; }
+  virtual void endVisit(ASTBooleanExpr *element) {}
   virtual bool visit(ASTVariableExpr *element) { return true; }
   virtual void endVisit(ASTVariableExpr *element) {}
   virtual bool visit(ASTBinaryExpr *element) { return true; }
   virtual void endVisit(ASTBinaryExpr *element) {}
+  virtual bool visit(ASTUnaryExpr *element) { return true; }
+  virtual void endVisit(ASTUnaryExpr *element) {}
+  virtual bool visit(ASTIncDecStmt *element) { return true; }
+  virtual void endVisit(ASTIncDecStmt *element) {}
   virtual bool visit(ASTInputExpr *element) { return true; }
   virtual void endVisit(ASTInputExpr *element) {}
   virtual bool visit(ASTFunAppExpr *element) { return true; }
@@ -50,6 +57,12 @@ public:
   virtual void endVisit(ASTRecordExpr *element) {}
   virtual bool visit(ASTAccessExpr *element) { return true; }
   virtual void endVisit(ASTAccessExpr *element) {}
+  virtual bool visit(ASTArrayExpr *element) { return true; }
+  virtual void endVisit(ASTArrayExpr *element) {}
+  virtual bool visit(ASTArrayOfExpr *element) { return true; }
+  virtual void endVisit(ASTArrayOfExpr *element) {}
+  virtual bool visit(ASTArrayRefExpr *element) { return true; }
+  virtual void endVisit(ASTArrayRefExpr *element) {}
   virtual bool visit(ASTDeclNode *element) { return true; }
   virtual void endVisit(ASTDeclNode *element) {}
   virtual bool visit(ASTDeclStmt *element) { return true; }
@@ -58,6 +71,12 @@ public:
   virtual void endVisit(ASTAssignStmt *element) {}
   virtual bool visit(ASTWhileStmt *element) { return true; }
   virtual void endVisit(ASTWhileStmt *element) {}
+  virtual bool visit(ASTForLoopStmt *element) { return true; }
+  virtual void endVisit(ASTForLoopStmt *element) {}
+  virtual bool visit(ASTIterStmt *element) { return true; }
+  virtual void endVisit(ASTIterStmt *element) {}
+  virtual bool visit(ASTTernaryExpr *element) { return true; }
+  virtual void endVisit(ASTTernaryExpr *element) {}
   virtual bool visit(ASTIfStmt *element) { return true; }
   virtual void endVisit(ASTIfStmt *element) {}
   virtual bool visit(ASTOutputStmt *element) { return true; }

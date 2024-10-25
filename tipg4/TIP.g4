@@ -38,19 +38,19 @@ nameDeclaration : IDENTIFIER ;
 //
 expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | expr '.' IDENTIFIER 			#accessExpr
-     | expr (INC | DEC)         #unaryIncDecExpr
+     | expr op=(INC | DEC)         #unaryIncDecExpr
      | '*' expr 				#deRefExpr
-     | IDENTIFIER '[' expr ']'  #arrayRefExpr
-     | LEN expr                 #lenExpr
+     | expr '[' expr ']'           #arrayRefExpr
+     | op=LEN expr                 #lenExpr
      | SUB NUMBER				#negNumber
-     | NOT expr                 #notExpr
-     | prefix=SUB expr        #negNumExpr
+     | op=NOT expr                 #notExpr
+     | prefix=SUB expr        #negExpr
      | '&' expr					#refExpr
      | expr op=(MUL | DIV | MOD) expr 		#multiplicativeExpr
      | expr op=(ADD | SUB) expr 		#additiveExpr
      | expr op=(GT | LT | GTE | LTE) expr 				#relationalExpr
-     | expr AND expr            #andExpr
-     | expr OR expr             #orExpr
+     | expr op=AND expr            #andExpr
+     | expr op=OR expr             #orExpr
      | expr op=(EQ | NE) expr 			#equalityExpr
      | <assoc=right> expr op=TIF expr op=TELSE expr #ternaryExpr
      | (KTRUE | KFALSE)           #booleanExpr
@@ -61,12 +61,17 @@ expr : expr '(' (expr (',' expr)*)? ')' 	#funAppExpr
      | KNULL					#nullExpr
      | recordExpr				#recordRule
      | '(' expr ')'				#parenExpr
-     | array                    #arrayExpr
+     | arrayExpr                #arrayRule
+     | arrayOfExpr              #arrayOfRule
 ;
 
 recordExpr : '{' (fieldExpr (',' fieldExpr)*)? '}' ;
 
 fieldExpr : IDENTIFIER ':' expr ;
+
+arrayExpr : '[' (expr (',' expr )*)? ']' ;
+
+arrayOfExpr : '[' expr 'of' expr ']' ;
 
 ////////////////////// TIP Statements ////////////////////////// 
 
@@ -81,7 +86,7 @@ statement : blockStmt
     | unaryStmt
 ;
 
-unaryStmt : expr (INC | DEC) ';' ;
+unaryStmt : expr op=(INC | DEC) ';' ;
 
 assignStmt : expr ('=' | '+=' | '-=' | '*=' | '/=' | '%=') expr ';' ;
 
@@ -100,8 +105,6 @@ outputStmt : KOUTPUT expr ';'  ;
 errorStmt : KERROR expr ';'  ;
 
 returnStmt : KRETURN expr ';'  ;
-
-array : '[' ( expr (( ',' expr )* | 'of' expr ) )? ']' ;
 
 ////////////////////// TIP Lexicon ////////////////////////// 
 
