@@ -48,14 +48,16 @@ void ASTForLoopStmt::accept(ASTVisitor *visitor)
 // Do I need to print it like the for loop is written by the developer with the ':', '..' and 'by'?
 std::ostream &ASTForLoopStmt::print(std::ostream &out) const
 {
-    out << "for (";
-    for (auto &e : getExprs())
+    out << "for (" << *VAR << " : " << *START << " .. " << *END;
+    if (STEP)
     {
-        out << *e << " ";
+        out << " by " << *STEP;
     }
-    out << ")";
+    out << ") " << *getBody();
+
     return out;
-} // LCOV_EXCL_LINE
+}
+// LCOV_EXCL_LINE
 
 std::vector<std::shared_ptr<ASTNode>> ASTForLoopStmt::getChildren()
 {

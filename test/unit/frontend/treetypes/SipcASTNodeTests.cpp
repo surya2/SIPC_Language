@@ -279,7 +279,6 @@ TEST_CASE("ASTIterStmtTest: Test methods of AST subtype.",
 
   std::stringstream o5;
   o5 << *stmt->getBody();
-  std::cout << o5.str() << std::endl;
   REQUIRE(o5.str() == "{ i = (i+(y-1)); }");
 }
 
