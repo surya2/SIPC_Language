@@ -30,6 +30,8 @@ TEST_CASE("ASTBinaryExprTest: Test modulo operator. ",
   std::stringstream o3;
   o3 << expr->getOp();
   REQUIRE(o3.str() == "%");
+
+  REQUIRE(expr->getChildren().size() == 2);
 }
 
 TEST_CASE("ASTBinaryExprTest: Test and operator. ",
@@ -58,6 +60,8 @@ TEST_CASE("ASTBinaryExprTest: Test and operator. ",
   std::stringstream o3;
   o3 << expr->getOp();
   REQUIRE(o3.str() == "&");
+
+  REQUIRE(expr->getChildren().size() == 2);
 }
 
 TEST_CASE("ASTBinaryExprTest: Test or operator. ",
@@ -86,6 +90,8 @@ TEST_CASE("ASTBinaryExprTest: Test or operator. ",
   std::stringstream o3;
   o3 << expr->getOp();
   REQUIRE(o3.str() == "|");
+
+  REQUIRE(expr->getChildren().size() == 2);
 }
 
 TEST_CASE("ASTBinaryExprTest: Test >= operator. ",
@@ -116,6 +122,8 @@ TEST_CASE("ASTBinaryExprTest: Test >= operator. ",
   std::stringstream o3;
   o3 << expr->getOp();
   REQUIRE(o3.str() == ">=");
+
+  REQUIRE(expr->getChildren().size() == 2);
 }
 
 TEST_CASE("ASTBinaryExprTest: Test < operator. ",
@@ -146,6 +154,8 @@ TEST_CASE("ASTBinaryExprTest: Test < operator. ",
   std::stringstream o3;
   o3 << expr->getOp();
   REQUIRE(o3.str() == "<");
+
+  REQUIRE(expr->getChildren().size() == 2);
 }
 
 TEST_CASE("ASTBinaryExprTest: Test <= operator. ",
@@ -176,6 +186,8 @@ TEST_CASE("ASTBinaryExprTest: Test <= operator. ",
   std::stringstream o3;
   o3 << expr->getOp();
   REQUIRE(o3.str() == "<=");
+
+  REQUIRE(expr->getChildren().size() == 2);
 }
 
 TEST_CASE("ASTTernaryExprTest: Test methods of AST subtype.",
@@ -195,6 +207,8 @@ TEST_CASE("ASTTernaryExprTest: Test methods of AST subtype.",
   auto ast = ASTHelper::build_ast(stream);
   auto ternaryExpr = ASTHelper::find_node<ASTTernaryExpr>(ast);
   REQUIRE(ternaryExpr != nullptr);
+
+  REQUIRE(ternaryExpr->getChildren().size() == 3);
 }
 
 TEST_CASE("ASTBooleanExprTest: Test methods of AST subtype.",
@@ -249,6 +263,47 @@ TEST_CASE("ASTForStmtTest: Test methods of AST subtype.",
   std::stringstream o5;
   o5 << *stmt->getBody();
   REQUIRE(o5.str() == "{ x = (x-1); }");
+
+  REQUIRE(stmt->getChildren().size() == 5);
+}
+
+TEST_CASE("ASTForStmtTest2: Test methods of AST subtype.",
+          "[ASTNodes]")
+{
+  std::stringstream stream;
+  stream << R"(
+      foo(x) {
+         var y;
+         for (y : 1 .. 10) {
+            x = x - 1;
+         }
+         return x;
+      }
+    )";
+
+  auto ast = ASTHelper::build_ast(stream);
+  auto stmt = ASTHelper::find_node<ASTForLoopStmt>(ast);
+
+  std::stringstream o1;
+  o1 << *stmt->getVar();
+  // std::cout << *stmt->getVar() << std::endl;
+  REQUIRE(o1.str() == "y");
+  std::stringstream o2;
+  o2 << *stmt->getStart();
+  // std::cout << *stmt->getStart() << std::endl;
+  REQUIRE(o2.str() == "1");
+  std::stringstream o3;
+  o3 << *stmt->getEnd();
+  // std::cout << *stmt->getEnd() << std::endl;
+  REQUIRE(o3.str() == "10");
+
+  REQUIRE(stmt->getStep() == nullptr);
+
+  std::stringstream o5;
+  o5 << *stmt->getBody();
+  REQUIRE(o5.str() == "{ x = (x-1); }");
+
+  REQUIRE(stmt->getChildren().size() == 4);
 }
 
 TEST_CASE("ASTIterStmtTest: Test methods of AST subtype.",
@@ -280,6 +335,8 @@ TEST_CASE("ASTIterStmtTest: Test methods of AST subtype.",
   std::stringstream o5;
   o5 << *stmt->getBody();
   REQUIRE(o5.str() == "{ i = (i+(y-1)); }");
+
+  REQUIRE(stmt->getChildren().size() == 3);
 }
 
 TEST_CASE("ASTIncTest: Test methods of AST subtype.",
@@ -302,6 +359,8 @@ TEST_CASE("ASTIncTest: Test methods of AST subtype.",
   o1 << *expr->getExpr();
   // std::cout << *stmt->getVar() << std::endl;
   REQUIRE(o1.str() == "y");
+
+  REQUIRE(expr->getChildren().size() == 1);
 }
 
 TEST_CASE("ASTDecTest: Test methods of AST subtype.",
@@ -324,6 +383,8 @@ TEST_CASE("ASTDecTest: Test methods of AST subtype.",
   o1 << *expr->getExpr();
   // std::cout << *stmt->getVar() << std::endl;
   REQUIRE(o1.str() == "x");
+
+  REQUIRE(expr->getChildren().size() == 1);
 }
 
 TEST_CASE("ASTNotTest: Test methods of AST subtype.",
@@ -346,6 +407,8 @@ TEST_CASE("ASTNotTest: Test methods of AST subtype.",
   o1 << *expr->getExpr();
   // std::cout << *stmt->getVar() << std::endl;
   REQUIRE(o1.str() == "y");
+
+  REQUIRE(expr->getChildren().size() == 1);
 }
 
 TEST_CASE("ASTNegationTest: Test methods of AST subtype.",
@@ -368,6 +431,8 @@ TEST_CASE("ASTNegationTest: Test methods of AST subtype.",
   o1 << *expr->getExpr();
   // std::cout << *stmt->getVar() << std::endl;
   REQUIRE(o1.str() == "x");
+
+  REQUIRE(expr->getChildren().size() == 1);
 }
 
 TEST_CASE("ASTArrayTest: Test methods of AST subtype.",
@@ -405,6 +470,8 @@ TEST_CASE("ASTArrayTest: Test methods of AST subtype.",
   std::stringstream o4;
   o4 << *items[3];
   REQUIRE(o4.str() == "(9+5)");
+
+  REQUIRE(expr->getChildren().size() == expr->getLen());
 }
 
 TEST_CASE("ASTArrayOfTest: Test methods of AST subtype.",
@@ -442,6 +509,8 @@ TEST_CASE("ASTArrayOfTest: Test methods of AST subtype.",
   std::stringstream o4;
   o4 << *items[3];
   REQUIRE(o4.str() == "(i+x)");
+
+  REQUIRE(expr->getChildren().size() == expr->getLen());
 }
 
 TEST_CASE("ASTArrayOfTest2: Test methods of AST subtype.",
@@ -467,6 +536,8 @@ TEST_CASE("ASTArrayOfTest2: Test methods of AST subtype.",
   std::stringstream o2;
   o2 << *expr->getElement();
   REQUIRE(o2.str() == "(i+x)");
+
+  REQUIRE(expr->getChildren().size() == 2);
 }
 
 TEST_CASE("ASTLenTest: Test methods of AST subtype.",
@@ -493,6 +564,8 @@ TEST_CASE("ASTLenTest: Test methods of AST subtype.",
   std::stringstream o2;
   o2 << expr->getOp();
   REQUIRE(o2.str() == "#");
+
+  REQUIRE(expr->getChildren().size() == 1);
 }
 
 TEST_CASE("ASTArrayRefTest: Test methods of AST subtype.",
@@ -519,6 +592,8 @@ TEST_CASE("ASTArrayRefTest: Test methods of AST subtype.",
   std::stringstream o2;
   o2 << *expr->getIndex();
   REQUIRE(o2.str() == "4");
+
+  REQUIRE(expr->getChildren().size() == 2);
 }
 
 TEST_CASE("ASTIncDecStmtTest: Test methods of AST subtype.",
@@ -544,4 +619,6 @@ TEST_CASE("ASTIncDecStmtTest: Test methods of AST subtype.",
   std::stringstream o2;
   o2 << expr->getOp();
   REQUIRE(o2.str() == "++");
+
+  REQUIRE(expr->getChildren().size() == 1);
 }

@@ -24,6 +24,8 @@ TEST_CASE("ASTAccessExprTest: Test methods of AST subtype.",
    std::stringstream o2;
    o2 << *expr->getRecord();
    REQUIRE(o2.str() == "{f:0}");
+
+   REQUIRE(expr->getChildren().size() == 1);
 }
 
 TEST_CASE("ASTAllocExprTest: Test methods of AST subtype.",
@@ -42,6 +44,8 @@ TEST_CASE("ASTAllocExprTest: Test methods of AST subtype.",
    std::stringstream o1;
    o1 << *expr->getInitializer();
    REQUIRE(o1.str() == "(2+3)");
+
+   REQUIRE(expr->getChildren().size() == 1);
 }
 
 TEST_CASE("ASTAssignStmtTest: Test methods of AST subtype.",
@@ -65,6 +69,8 @@ TEST_CASE("ASTAssignStmtTest: Test methods of AST subtype.",
    std::stringstream o2;
    o2 << *stmt->getRHS();
    REQUIRE(o2.str() == "(2+7)");
+
+   REQUIRE(stmt->getChildren().size() == 2);
 }
 
 TEST_CASE("ASTBinaryExprTest: Test methods of AST subtype.",
@@ -93,6 +99,8 @@ TEST_CASE("ASTBinaryExprTest: Test methods of AST subtype.",
    std::stringstream o3;
    o3 << expr->getOp();
    REQUIRE(o3.str() == "+");
+
+   REQUIRE(expr->getChildren().size() == 2);
 }
 
 TEST_CASE("ASTBlockStmtTest: Test methods of AST subtype.",
@@ -115,6 +123,8 @@ TEST_CASE("ASTBlockStmtTest: Test methods of AST subtype.",
 
    auto stmts = stmt->getStmts();
    REQUIRE(stmts.size() == 2);
+
+   REQUIRE(stmt->getChildren().size() == 2);
 }
 
 TEST_CASE("ASTDeclNodeTest: Test methods of AST subtype.",
@@ -150,6 +160,8 @@ TEST_CASE("ASTDeclStmtTest: Test methods of AST subtype.",
 
    auto stmts = stmt->getVars();
    REQUIRE(stmts.size() == 4);
+
+   REQUIRE(stmt->getChildren().size() == 4);
 }
 
 TEST_CASE("ASTDerefExprTest: Test methods of AST subtype.",
@@ -168,6 +180,8 @@ TEST_CASE("ASTDerefExprTest: Test methods of AST subtype.",
    std::stringstream o1;
    o1 << *expr->getPtr();
    REQUIRE(o1.str() == "(*p)");
+
+   REQUIRE(expr->getChildren().size() == 1);
 }
 
 TEST_CASE("ASTErrorStmtTest: Test methods of AST subtype.",
@@ -187,6 +201,8 @@ TEST_CASE("ASTErrorStmtTest: Test methods of AST subtype.",
    std::stringstream o1;
    o1 << *stmt->getArg();
    REQUIRE(o1.str() == "(13-1)");
+
+   REQUIRE(stmt->getChildren().size() == 1);
 }
 
 TEST_CASE("ASTFieldExprTest: Test methods of AST subtype.",
@@ -209,6 +225,8 @@ TEST_CASE("ASTFieldExprTest: Test methods of AST subtype.",
    std::stringstream o2;
    o2 << *expr->getInitializer();
    REQUIRE(o2.str() == "13");
+
+   REQUIRE(expr->getChildren().size() == 1);
 }
 
 TEST_CASE("ASTFunAppExprTest: Test methods of AST subtype.",
@@ -230,6 +248,8 @@ TEST_CASE("ASTFunAppExprTest: Test methods of AST subtype.",
 
    auto arguments = expr->getActuals();
    REQUIRE(arguments.size() == 3);
+
+   REQUIRE(expr->getChildren().size() == 4);
 }
 
 TEST_CASE("ASTFunctionTest: Test methods of AST subtype.",
@@ -258,6 +278,8 @@ TEST_CASE("ASTFunctionTest: Test methods of AST subtype.",
    REQUIRE(fun->getFormals().size() == 2);
    REQUIRE(fun->getDeclarations().size() == 2);
    REQUIRE(fun->getStmts().size() == 3);
+
+   REQUIRE(fun->getChildren().size() == 8);
 }
 
 TEST_CASE("ASTIfStmtTest: Test methods of AST subtype.",
@@ -289,6 +311,8 @@ TEST_CASE("ASTIfStmtTest: Test methods of AST subtype.",
    std::stringstream o3;
    o3 << *stmt->getElse();
    REQUIRE(o3.str() == "x = 7;");
+
+   REQUIRE(stmt->getChildren().size() == 3);
 }
 
 TEST_CASE("ASTIfStmtTest: No else.",
@@ -308,6 +332,8 @@ TEST_CASE("ASTIfStmtTest: No else.",
    auto stmt = ASTHelper::find_node<ASTIfStmt>(ast);
 
    REQUIRE(stmt->getElse() == nullptr);
+
+   REQUIRE(stmt->getChildren().size() == 2);
 }
 
 TEST_CASE("ASTInputExprTest: Test methods of AST subtype.",
@@ -375,6 +401,8 @@ TEST_CASE("ASTOutputStmtTest: Test methods of AST subtype.",
    std::stringstream o1;
    o1 << *stmt->getArg();
    REQUIRE(o1.str() == "17");
+
+   REQUIRE(stmt->getChildren().size() == 1);
 }
 
 TEST_CASE("ASTRecordExprTest: Test methods of AST subtype.",
@@ -391,6 +419,8 @@ TEST_CASE("ASTRecordExprTest: Test methods of AST subtype.",
    auto expr = ASTHelper::find_node<ASTRecordExpr>(ast);
 
    REQUIRE(expr->getFields().size() == 3);
+
+   REQUIRE(expr->getChildren().size() == expr->getFields().size());
 }
 
 TEST_CASE("ASTRefExprTest: Test methods of AST subtype.",
@@ -410,6 +440,8 @@ TEST_CASE("ASTRefExprTest: Test methods of AST subtype.",
    std::stringstream o1;
    o1 << *expr->getVar();
    REQUIRE(o1.str() == "x");
+
+   REQUIRE(expr->getChildren().size() == 1);
 }
 
 TEST_CASE("ASTReturnStmtTest: Test methods of AST subtype.",
@@ -428,6 +460,8 @@ TEST_CASE("ASTReturnStmtTest: Test methods of AST subtype.",
    std::stringstream o1;
    o1 << *stmt->getArg();
    REQUIRE(o1.str() == "123");
+
+   REQUIRE(stmt->getChildren().size() == 1);
 }
 
 TEST_CASE("ASTVariableExprTest: Test methods of AST subtype.",
@@ -470,4 +504,6 @@ TEST_CASE("ASTWhileStmtTest: Test methods of AST subtype.",
    std::stringstream o2;
    o2 << *stmt->getBody();
    REQUIRE(o2.str() == "{ x = (x-1); }");
+
+   REQUIRE(stmt->getChildren().size() == 2);
 }

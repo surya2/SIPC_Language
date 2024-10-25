@@ -24,10 +24,6 @@ ASTForLoopStmt::ASTForLoopStmt(std::vector<std::shared_ptr<ASTExpr>> EXPRS, std:
         this->END = this->EXPRS[2];
         this->STEP = this->EXPRS[3];
     }
-    else
-    {
-        throw std::runtime_error("Invalid number of expressions in for loop");
-    }
 }
 
 std::vector<ASTExpr *> ASTForLoopStmt::getExprs() const { return rawRefs(EXPRS); }
