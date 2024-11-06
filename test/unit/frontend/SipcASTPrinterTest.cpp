@@ -353,7 +353,7 @@ TEST_CASE("ASTPrinterTest: inc/dec statement", "[ASTNodePrint]")
     )";
 
   std::vector<std::string> expected{
-      "i++;", "y--;"};
+      "i = (i+1);", "y = (y-1);"};
 
   auto ast = ASTHelper::build_ast(stream);
 
@@ -363,7 +363,7 @@ TEST_CASE("ASTPrinterTest: inc/dec statement", "[ASTNodePrint]")
   int numStmts = 2;
   for (auto s : f->getStmts())
   {
-    auto incdecStmt = dynamic_cast<ASTIncDecStmt *>(s);
+    auto incdecStmt = dynamic_cast<ASTAssignStmt *>(s);
     stream = std::stringstream();
     stream << *incdecStmt;
     auto actual = stream.str();

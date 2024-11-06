@@ -5,7 +5,8 @@
 
 /*! \brief Class for assignment
  */
-class ASTAssignStmt : public ASTStmt {
+class ASTAssignStmt : public ASTStmt
+{
   std::shared_ptr<ASTExpr> LHS, RHS;
 
 public:

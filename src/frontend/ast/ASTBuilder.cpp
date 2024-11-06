@@ -776,9 +776,18 @@ Any ASTBuilder::visitUnaryStmt(TIPParser::UnaryStmtContext *ctx)
   visit(ctx->expr());
   auto expr = visitedExpr;
 
-  visitedStmt = std::make_shared<ASTIncDecStmt>(opString(ctx->op->getType()), expr);
+  std::shared_ptr<ASTBinaryExpr> rhs = nullptr;
+  if (ctx->op->getType() == TIPParser::INC)
+  {
+    rhs = std::make_shared<ASTBinaryExpr>("+", expr, std::make_shared<ASTNumberExpr>(1));
+  }
+  else if (ctx->op->getType() == TIPParser::DEC)
+  {
+    rhs = std::make_shared<ASTBinaryExpr>("-", expr, std::make_shared<ASTNumberExpr>(1));
+  }
+  visitedStmt = std::make_shared<ASTAssignStmt>(expr, rhs);
 
-  LOG_S(1) << "Built AST node " << *visitedExpr;
+  LOG_S(1) << "Built AST node " << *visitedStmt;
 
   // Set source location
   visitedStmt->setLocation(ctx->getStart()->getLine(),

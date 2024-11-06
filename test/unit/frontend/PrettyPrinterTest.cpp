@@ -328,8 +328,8 @@ TEST_CASE("PrettyPrinter: Test unary operators", "[PrettyPrinter]")
   y = ((-y) + i);
   i = (i--);
   i = (#arr);
-  i--;
-  y++;
+  i = (i - 1);
+  y = (y + 1);
   return (a++);
 }
 )";

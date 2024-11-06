@@ -6,28 +6,38 @@
 
 #include "loguru.hpp"
 
-namespace {
+namespace
+{
 
-// Return true if expression has an l-value
-bool isAssignable(ASTExpr *e) {
-  if (dynamic_cast<ASTVariableExpr *>(e))
-    return true;
-  if (dynamic_cast<ASTAccessExpr *>(e)) {
-    ASTAccessExpr *access = dynamic_cast<ASTAccessExpr *>(e);
-    if (dynamic_cast<ASTVariableExpr *>(access->getRecord())) {
+  // Return true if expression has an l-value
+  bool isAssignable(ASTExpr *e)
+  {
+    if (dynamic_cast<ASTVariableExpr *>(e))
       return true;
-    } else if (dynamic_cast<ASTDeRefExpr *>(access->getRecord())) {
-      return true;
-    } else {
-      return false;
+    if (dynamic_cast<ASTAccessExpr *>(e))
+    {
+      ASTAccessExpr *access = dynamic_cast<ASTAccessExpr *>(e);
+      if (dynamic_cast<ASTVariableExpr *>(access->getRecord()))
+      {
+        return true;
+      }
+      else if (dynamic_cast<ASTDeRefExpr *>(access->getRecord()))
+      {
+        return true;
+      }
+      else
+      {
+        return false;
+      }
     }
+    // if (dynamic_cast<ASTArrayRefExpr *>(e))
+    //   return true;
+    return false;
   }
-  return false;
-}
-
 } // namespace
 
-void CheckAssignable::endVisit(ASTAssignStmt *element) {
+void CheckAssignable::endVisit(ASTAssignStmt *element)
+{
   LOG_S(1) << "Checking assignability of " << *element;
 
   if (isAssignable(element->getLHS()))
@@ -39,17 +49,21 @@ void CheckAssignable::endVisit(ASTAssignStmt *element) {
 
   std::ostringstream oss;
   oss << "Assignment error on line " << element->getLine() << ": ";
-  if (dynamic_cast<ASTAccessExpr *>(element->getLHS())) {
+  if (dynamic_cast<ASTAccessExpr *>(element->getLHS()))
+  {
     ASTAccessExpr *access = dynamic_cast<ASTAccessExpr *>(element->getLHS());
     oss << *access->getRecord()
         << " is an expression, and not a variable corresponding to a record\n";
-  } else {
+  }
+  else
+  {
     oss << *element->getLHS() << " not an l-value\n";
   }
   throw SemanticError(oss.str());
 }
 
-void CheckAssignable::endVisit(ASTRefExpr *element) {
+void CheckAssignable::endVisit(ASTRefExpr *element)
+{
   LOG_S(1) << "Checking assignability of " << *element;
 
   if (isAssignable(element->getVar()))
@@ -61,7 +75,8 @@ void CheckAssignable::endVisit(ASTRefExpr *element) {
   throw SemanticError(oss.str());
 }
 
-void CheckAssignable::check(ASTProgram *p) {
+void CheckAssignable::check(ASTProgram *p)
+{
   LOG_S(1) << "Checking assignability";
   CheckAssignable visitor;
   p->accept(&visitor);

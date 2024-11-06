@@ -609,16 +609,25 @@ TEST_CASE("ASTIncDecStmtTest: Test methods of AST subtype.",
     )";
 
   auto ast = ASTHelper::build_ast(stream);
-  auto expr = ASTHelper::find_node<ASTIncDecStmt>(ast);
+  auto expr = ASTHelper::find_node<ASTAssignStmt>(ast);
 
   std::stringstream o1;
-  o1 << *expr->getExpr();
+  o1 << *expr->getLHS();
   // std::cout << *stmt->getVar() << std::endl;
   REQUIRE(o1.str() == "i");
 
-  std::stringstream o2;
-  o2 << expr->getOp();
-  REQUIRE(o2.str() == "++");
+  // std::stringstream o2;
+  auto o2 = dynamic_cast<ASTBinaryExpr *>(expr->getRHS());
+  std::stringstream o3;
+  o3 << *o2->getLeft();
+  std::stringstream o4;
+  o4 << *o2->getRight();
+  std::stringstream o5;
+  o5 << o2->getOp();
+  std::cout << o3.str() << std::endl;
+  REQUIRE(o3.str() == "i");
+  REQUIRE(o4.str() == "1");
+  REQUIRE(o5.str() == "+");
 
-  REQUIRE(expr->getChildren().size() == 1);
+  REQUIRE(expr->getChildren().size() == 2);
 }
