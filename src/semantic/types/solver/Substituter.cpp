@@ -76,6 +76,19 @@ void Substituter::endVisit(SipArray *element)
   visitedTypes.push_back(std::make_shared<SipArray>(elementTypes));
 }
 
+void Substituter::endVisit(SipArrayOf *element)
+{
+  std::shared_ptr<TipType> elementType;
+  elementType = visitedTypes.back();
+  visitedTypes.pop_back();
+
+  std::shared_ptr<TipType> lengthType;
+  lengthType = visitedTypes.back();
+  visitedTypes.pop_back();
+
+  visitedTypes.push_back(std::make_shared<SipArrayOf>(lengthType, elementType));
+}
+
 void Substituter::endVisit(TipRecord *element)
 {
   std::vector<std::shared_ptr<TipType>> initTypes;

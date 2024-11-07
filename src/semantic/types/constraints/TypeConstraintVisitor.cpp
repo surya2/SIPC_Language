@@ -8,6 +8,7 @@
 #include "TipRef.h"
 #include "TipVar.h"
 #include "SipArray.h"
+#include "SipArrayOf.h"
 
 TypeConstraintVisitor::TypeConstraintVisitor(
     SymbolTable *st, std::shared_ptr<ConstraintHandler> handler)
@@ -295,8 +296,7 @@ void TypeConstraintVisitor::endVisit(ASTOutputStmt *element)
  *
  * Type rule for "[ E1, ..., En ]":
  *   [[ [ E1, ..., En ] ]] = [ v1, ..., vn ]
- * where fi is the ith field in the program's global record
- * and vi = [[Ei]]
+ * where vi = [[Ei]]
  */
 void TypeConstraintVisitor::endVisit(ASTArrayExpr *element)
 {
@@ -309,6 +309,28 @@ void TypeConstraintVisitor::endVisit(ASTArrayExpr *element)
 
   constraintHandler->handle(astToVar(element),
                             std::make_shared<SipArray>(elementTypes));
+}
+
+/*! \brief Type constraints for array of initializations.
+ *
+ * Type rule for "[ E1 of En ]":
+ *   [[ [ E1 of E2 ] ]] = [ v1 of v2 ]
+ * where  v1 = [[E1]] and v2 = [[E2]]
+ * E1 is the length of the array and E2 are the items
+ * so we need to handle them separately as v1 neediing to resolve to an integer
+ * and v2 needing to resolve to some type
+ */
+void TypeConstraintVisitor::endVisit(ASTArrayOfExpr *element)
+{
+  std::shared_ptr<TipType> lengthType;
+  std::shared_ptr<TipType> elementType;
+
+  lengthType = astToVar(element->getLength());
+  constraintHandler->handle(lengthType, std::make_shared<TipInt>());
+  elementType = astToVar(element->getElement());
+
+  constraintHandler->handle(astToVar(element),
+                            std::make_shared<SipArrayOf>(lengthType, elementType));
 }
 
 /*! \brief Type constraints for record expression.
