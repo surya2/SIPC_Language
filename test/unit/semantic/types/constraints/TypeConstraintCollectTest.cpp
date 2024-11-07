@@ -73,7 +73,7 @@ TEST_CASE("TypeConstraintVisitor: booleans, return type",
             test() {
               var x, y;
               x = true;
-              y = false;
+              y = x or false;
               return y;
             }
          )";

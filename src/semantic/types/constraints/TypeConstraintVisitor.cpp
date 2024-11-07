@@ -111,7 +111,7 @@ void TypeConstraintVisitor::endVisit(ASTBooleanExpr *element)
   constraintHandler->handle(astToVar(element), std::make_shared<TipBool>());
 }
 
-/*! \brief Type constraints for binary operator.
+/*! \brief Type constraints for binary operators.
  *
  * Type rules for "E1 op E2":
  *   [[E1 op E2]] = int
@@ -124,11 +124,25 @@ void TypeConstraintVisitor::endVisit(ASTBinaryExpr *element)
 {
   auto op = element->getOp();
   auto intType = std::make_shared<TipInt>();
+  auto boolType = std::make_shared<TipBool>();
 
   // result type is integer
-  constraintHandler->handle(astToVar(element), intType);
+  if (op == "&" || op == "|")
+  {
+    constraintHandler->handle(astToVar(element), boolType);
+  }
+  else
+  {
+    constraintHandler->handle(astToVar(element), intType);
+  }
 
-  if (op != "==" && op != "!=")
+  if (op == "&" || op == "|")
+  {
+    // operands are integer
+    constraintHandler->handle(astToVar(element->getLeft()), boolType);
+    constraintHandler->handle(astToVar(element->getRight()), boolType);
+  }
+  else if (op != "==" && op != "!=")
   {
     // operands are integer
     constraintHandler->handle(astToVar(element->getLeft()), intType);
