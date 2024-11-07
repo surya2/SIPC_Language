@@ -71,10 +71,11 @@ TEST_CASE("TypeConstraintVisitor: booleans, return type",
   program << R"(
             // [[x]] = bool, [[y]] = bool, [[test]] = () -> bool
             test() {
-              var x, y;
+              var x, y, z;
               x = true;
               y = x or false;
-              return y;
+              z = x and y;
+              return z;
             }
          )";
 
