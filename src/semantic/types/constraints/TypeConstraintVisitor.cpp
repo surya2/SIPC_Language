@@ -7,6 +7,7 @@
 #include "TipRecord.h"
 #include "TipRef.h"
 #include "TipVar.h"
+#include "SipArray.h"
 
 TypeConstraintVisitor::TypeConstraintVisitor(
     SymbolTable *st, std::shared_ptr<ConstraintHandler> handler)
@@ -288,6 +289,26 @@ void TypeConstraintVisitor::endVisit(ASTOutputStmt *element)
 {
   constraintHandler->handle(astToVar(element->getArg()),
                             std::make_shared<TipInt>());
+}
+
+/*! \brief Type constraints for array initializations.
+ *
+ * Type rule for "[ E1, ..., En ]":
+ *   [[ [ E1, ..., En ] ]] = [ v1, ..., vn ]
+ * where fi is the ith field in the program's global record
+ * and vi = [[Ei]]
+ */
+void TypeConstraintVisitor::endVisit(ASTArrayExpr *element)
+{
+  std::vector<std::shared_ptr<TipType>> elementTypes;
+
+  for (auto &e : element->ITEMS)
+  {
+    elementTypes.push_back(astToVar(e.get()));
+  }
+
+  constraintHandler->handle(astToVar(element),
+                            std::make_shared<SipArray>(elementTypes));
 }
 
 /*! \brief Type constraints for record expression.

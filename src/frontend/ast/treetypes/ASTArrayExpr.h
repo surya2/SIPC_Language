@@ -7,10 +7,9 @@
  */
 class ASTArrayExpr : public ASTExpr
 {
+public:
     std::vector<std::shared_ptr<ASTExpr>> ITEMS;
     int LEN;
-
-public:
     std::vector<std::shared_ptr<ASTNode>> getChildren() override;
     ASTArrayExpr(std::vector<std::shared_ptr<ASTExpr>> EXPRS, int LEN);
     std::vector<ASTExpr *> getItems() const;
