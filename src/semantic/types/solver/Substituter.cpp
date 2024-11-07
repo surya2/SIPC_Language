@@ -36,6 +36,11 @@ void Substituter::endVisit(TipInt *element) {
   visitedTypes.push_back(std::make_shared<TipInt>());
 }
 
+void Substituter::endVisit(TipBool *element) {
+  // Zero element in visitedTypes (a special case of Cons)
+  visitedTypes.push_back(std::make_shared<TipBool>());
+}
+
 void Substituter::endVisit(TipMu *element) {
   // Two elements in visitedTypes
   auto tType = visitedTypes.back();

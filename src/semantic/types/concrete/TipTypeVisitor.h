@@ -21,7 +21,8 @@
  * referenced by overridden methods to communicate information along
  * the traversal to future method invocations.
  */
-class TipTypeVisitor {
+class TipTypeVisitor
+{
 public:
   virtual bool visit(TipAlpha *element) { return true; }
   virtual void endVisit(TipAlpha *element) {}
@@ -39,4 +40,6 @@ public:
   virtual void endVisit(TipRef *element) {}
   virtual bool visit(TipVar *element) { return true; }
   virtual void endVisit(TipVar *element) {}
+  virtual bool visit(TipBool *element) { return true; }
+  virtual void endVisit(TipBool *element) {}
 };

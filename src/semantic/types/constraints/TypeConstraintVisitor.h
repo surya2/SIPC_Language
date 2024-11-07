@@ -19,7 +19,8 @@
  * A ConstraintHandler. This provides flexibility in using the visitor - it
  * can simply record the constraints or it can solve them on the fly.
  */
-class TypeConstraintVisitor : public ASTVisitor {
+class TypeConstraintVisitor : public ASTVisitor
+{
 public:
   TypeConstraintVisitor() = delete;
 
@@ -43,6 +44,7 @@ public:
   void endVisit(ASTAllocExpr *element) override;
   void endVisit(ASTAssignStmt *element) override;
   void endVisit(ASTBinaryExpr *element) override;
+  void endVisit(ASTBooleanExpr *element) override;
   void endVisit(ASTDeRefExpr *element) override;
   void endVisit(ASTErrorStmt *element) override;
   void endVisit(ASTFunAppExpr *element) override;
