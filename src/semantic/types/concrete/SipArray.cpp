@@ -8,31 +8,9 @@ SipArray::SipArray(std::shared_ptr<TipType> elementsType)
 
 std::ostream &SipArray::print(std::ostream &out) const
 {
-  if (dynamic_cast<const TipInt *>(type.get()))
-  {
-    out << "int";
-  }
-  else if (dynamic_cast<const TipBool *>(type.get()))
-  {
-    out << "bool";
-  }
-  else
-  {
-    out << *arguments.front();
-  }
+  out << *arguments.front();
   out << "[";
-  bool first = true;
-  int i = 0;
-  for (auto &elem : arguments)
-  {
-    if (first)
-    {
-      out << *elem;
-      first = false;
-      continue;
-    }
-    out << "," << *elem;
-  }
+  out << *arguments.front();
   out << "]";
   return out;
 }

@@ -49,3 +49,8 @@ std::shared_ptr<TipType> TypeHelper::arrayType(std::shared_ptr<TipType> t, std::
 {
     return std::make_shared<SipArray>(ts);
 }
+
+std::shared_ptr<TipType> TypeHelper::arrayType(std::shared_ptr<TipType> t, std::shared_ptr<TipType> ts)
+{
+    return std::make_shared<SipArray>(ts);
+}

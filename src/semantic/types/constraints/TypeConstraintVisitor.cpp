@@ -8,7 +8,6 @@
 #include "TipRef.h"
 #include "TipVar.h"
 #include "SipArray.h"
-#include "SipArrayOf.h"
 
 #include <memory>
 
@@ -414,7 +413,7 @@ void TypeConstraintVisitor::endVisit(ASTArrayOfExpr *element)
   elementType = astToVar(element->getElement());
 
   constraintHandler->handle(astToVar(element),
-                            std::make_shared<SipArrayOf>(lengthType, elementType));
+                            std::make_shared<SipArray>(elementType));
 }
 
 /*! \brief Type constraints for array reference/indexing expression.

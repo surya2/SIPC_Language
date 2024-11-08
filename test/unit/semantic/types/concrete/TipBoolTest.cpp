@@ -40,3 +40,16 @@ TEST_CASE("TipBool: test all TipBools are equal", "[tip_bool]")
   TipBool t2;
   REQUIRE(t1 == t2);
 }
+
+TEST_CASE("TipBool: Test output stream"
+          "[TipBool]")
+{
+  TipBool t;
+
+  auto expectedValue = "bool";
+  std::stringstream stream;
+  stream << t;
+  std::string actualValue = stream.str();
+
+  REQUIRE(expectedValue == actualValue);
+}

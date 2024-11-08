@@ -17,4 +17,5 @@ public:
     static std::shared_ptr<TipType> recType(std::vector<std::shared_ptr<TipType>> t, std::vector<std::string> n);
     static std::shared_ptr<TipType> absentType();
     static std::shared_ptr<TipType> arrayType(std::shared_ptr<TipType> t, std::vector<std::shared_ptr<TipType>> ts);
+    static std::shared_ptr<TipType> arrayType(std::shared_ptr<TipType> t, std::shared_ptr<TipType> ts);
 };
