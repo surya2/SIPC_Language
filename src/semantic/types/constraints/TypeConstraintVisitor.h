@@ -59,7 +59,10 @@ public:
   void endVisit(ASTOutputStmt *element) override;
   void endVisit(ASTRecordExpr *element) override;
   void endVisit(ASTRefExpr *element) override;
+  void endVisit(ASTTernaryExpr *element) override;
   void endVisit(ASTWhileStmt *element) override;
+  void endVisit(ASTForLoopStmt *element) override;
+  void endVisit(ASTIterStmt *element) override;
   void endVisit(ASTUnaryExpr *element) override;
 
 protected:

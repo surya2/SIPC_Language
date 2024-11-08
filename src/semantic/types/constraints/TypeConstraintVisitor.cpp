@@ -272,6 +272,39 @@ void TypeConstraintVisitor::endVisit(ASTWhileStmt *element)
                             std::make_shared<TipBool>());
 }
 
+/*! \brief Type constraints for while loop.
+ *
+ * Type rules for "while (E) S":
+ *   [[E]] = int
+ */
+void TypeConstraintVisitor::endVisit(ASTForLoopStmt *element)
+{
+  constraintHandler->handle(astToVar(element->getVar()),
+                            std::make_shared<TipInt>());
+  constraintHandler->handle(astToVar(element->getStart()),
+                            std::make_shared<TipInt>());
+  constraintHandler->handle(astToVar(element->getEnd()),
+                            std::make_shared<TipInt>());
+  if (element->getStep())
+  {
+    constraintHandler->handle(astToVar(element->getStep()),
+                              std::make_shared<TipInt>());
+  }
+}
+
+/*! \brief Type constraints for while loop.
+ *
+ * Type rules for "while (E) S":
+ *   [[E]] = int
+ */
+void TypeConstraintVisitor::endVisit(ASTIterStmt *element)
+{
+  auto elementType = astToVar(element->getElement());
+  auto arrayTypeVar = std::make_shared<SipArray>(elementType);
+  auto arrayType = astToVar(element->getIterable());
+  constraintHandler->handle(arrayType, arrayTypeVar);
+}
+
 /*! \brief Type constraints for if statement.
  *
  * Type rules for "if (E) S1 else S2":
@@ -281,6 +314,21 @@ void TypeConstraintVisitor::endVisit(ASTIfStmt *element)
 {
   constraintHandler->handle(astToVar(element->getCondition()),
                             std::make_shared<TipBool>());
+}
+
+/*! \brief Type constraints for if statement.
+ *
+ * Type rules for "if (E) S1 else S2":
+ *   [[E]] = int
+ */
+void TypeConstraintVisitor::endVisit(ASTTernaryExpr *element)
+{
+  constraintHandler->handle(astToVar(element->getCondition()),
+                            std::make_shared<TipBool>());
+  constraintHandler->handle(astToVar(element->getTrueExpr()),
+                            astToVar(element->getFalseExpr()));
+  constraintHandler->handle(astToVar(element),
+                            astToVar(element->getTrueExpr()));
 }
 
 /*! \brief Type constraints for output statement.
