@@ -2,12 +2,13 @@
 #include "TipTypeVisitor.h"
 
 SipArrayOf::SipArrayOf(std::shared_ptr<TipType> length, std::shared_ptr<TipType> element)
-    : length(length), element(element) {}
+    : length(length), type(element) {}
 
 std::ostream &SipArrayOf::print(std::ostream &out) const
 {
+  out << *type;
   out << "[";
-  out << *length << " of " << *element;
+  out << *length << " of " << *type;
   out << "]";
   return out;
 }
@@ -21,7 +22,7 @@ bool SipArrayOf::operator==(const TipType &other) const
     return false;
   }
 
-  if (*length != *sipArrayOf->length || *element != *sipArrayOf->element)
+  if (*length != *sipArrayOf->length || *type != *sipArrayOf->type)
   {
     return false;
   }
@@ -41,7 +42,7 @@ TipType *SipArrayOf::getLength()
 
 TipType *SipArrayOf::getElement()
 {
-  return element.get();
+  return type.get();
 }
 
 void SipArrayOf::accept(TipTypeVisitor *visitor)

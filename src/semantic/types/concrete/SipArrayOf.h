@@ -29,5 +29,5 @@ protected:
 
 private:
   std::shared_ptr<TipType> const length;
-  std::shared_ptr<TipType> const element;
+  std::shared_ptr<TipType> const type;
 };

@@ -70,7 +70,7 @@ TEST_CASE("SipArrayOf: Test output stream"
       std::make_shared<TipRef>(std::make_shared<TipInt>())};
   SipArrayOf sipArray(length, element);
 
-  auto expectedValue = "[int of \u2B61int]";
+  auto expectedValue = "\u2B61int[int of \u2B61int]";
   std::stringstream stream;
   stream << sipArray;
   std::string actualValue = stream.str();

@@ -3,12 +3,15 @@
 
 int TipCons::arity() const { return arguments.size(); }
 
-namespace {
-/*! \brief Determine that subtypes of two objects are the same
- */
-template <typename T> bool sameType(const TipType *x, const TipType *y) {
-  return dynamic_cast<T const *>(x) && dynamic_cast<T const *>(y);
-}
+namespace
+{
+  /*! \brief Determine that subtypes of two objects are the same
+   */
+  template <typename T>
+  bool sameType(const TipType *x, const TipType *y)
+  {
+    return dynamic_cast<T const *>(x) && dynamic_cast<T const *>(y);
+  }
 } // namespace
 
 /*! \brief Check for dynamic subtype and artity agreement
@@ -16,10 +19,13 @@ template <typename T> bool sameType(const TipType *x, const TipType *y) {
  * the addition of new subtypes of TipCons.  Extend this if you
  * add such a subtype.
  */
-bool TipCons::doMatch(TipType const *t) const {
+bool TipCons::doMatch(TipType const *t) const
+{
   // Check if they are both the same TipType subtype
   if (sameType<TipFunction>(t, this) || sameType<TipInt>(t, this) ||
-      sameType<TipRecord>(t, this) || sameType<TipRef>(t, this)) {
+      sameType<TipRecord>(t, this) || sameType<TipRef>(t, this) ||
+      sameType<TipBool>(t, this) || sameType<SipArray>(t, this))
+  {
     auto tipCons = dynamic_cast<TipCons const *>(t);
     return tipCons->arity() == arity();
   }
@@ -29,10 +35,12 @@ bool TipCons::doMatch(TipType const *t) const {
 TipCons::TipCons(std::vector<std::shared_ptr<TipType>> arguments)
     : arguments(std::move(arguments)) {}
 
-void TipCons::setArguments(std::vector<std::shared_ptr<TipType>> &a) {
+void TipCons::setArguments(std::vector<std::shared_ptr<TipType>> &a)
+{
   arguments = a;
 }
 
-const std::vector<std::shared_ptr<TipType>> &TipCons::getArguments() const {
+const std::vector<std::shared_ptr<TipType>> &TipCons::getArguments() const
+{
   return arguments;
 }

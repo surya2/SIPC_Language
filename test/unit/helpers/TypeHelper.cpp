@@ -45,7 +45,7 @@ std::shared_ptr<TipType> TypeHelper::absentType()
     return std::make_shared<TipAbsentField>();
 }
 
-std::shared_ptr<TipType> TypeHelper::arrayType(std::vector<std::shared_ptr<TipType>> t)
+std::shared_ptr<TipType> TypeHelper::arrayType(std::shared_ptr<TipType> t, std::vector<std::shared_ptr<TipType>> ts)
 {
-    return std::make_shared<SipArray>(t);
+    return std::make_shared<SipArray>(ts);
 }

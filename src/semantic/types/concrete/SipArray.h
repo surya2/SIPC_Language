@@ -16,7 +16,9 @@ class SipArray : public TipCons
 public:
   SipArray() = delete;
   SipArray(std::vector<std::shared_ptr<TipType>> elements);
+  SipArray(std::shared_ptr<TipType> elementsType);
 
+  std::shared_ptr<TipType> const type;
   std::vector<std::shared_ptr<TipType>> &getElements();
   bool operator==(const TipType &other) const override;
   bool operator!=(const TipType &other) const override;
@@ -25,7 +27,4 @@ public:
 
 protected:
   std::ostream &print(std::ostream &out) const override;
-
-private:
-  std::vector<std::string> const names;
 };

@@ -10,6 +10,8 @@
 #include "SipArray.h"
 #include "SipArrayOf.h"
 
+#include <memory>
+
 TypeConstraintVisitor::TypeConstraintVisitor(
     SymbolTable *st, std::shared_ptr<ConstraintHandler> handler)
     : symbolTable(st), constraintHandler(std::move(handler)) {};
@@ -295,17 +297,40 @@ void TypeConstraintVisitor::endVisit(ASTOutputStmt *element)
 /*! \brief Type constraints for array initializations.
  *
  * Type rule for "[ E1, ..., En ]":
- *   [[ [ E1, ..., En ] ]] = [ v1, ..., vn ]
- * where vi = [[Ei]]
+ *   [[ [ E1, ..., En ] ]] = v[]
+ * where v = [[Ei]] and all Ei are the same type
  */
 void TypeConstraintVisitor::endVisit(ASTArrayExpr *element)
 {
   std::vector<std::shared_ptr<TipType>> elementTypes;
+  std::shared_ptr<TipType> elementsType;
 
+  if (element->ITEMS.empty())
+  {
+    // empty array
+    elementTypes.push_back(std::make_shared<TipAlpha>(nullptr));
+    constraintHandler->handle(astToVar(element),
+                              std::make_shared<SipArray>(elementTypes));
+    return;
+  }
+
+  bool first = true;
+  std::shared_ptr<TipType> prevElementType;
   for (auto &e : element->ITEMS)
   {
+    if (first)
+    {
+      prevElementType = astToVar(e.get());
+      first = false;
+    }
+    else
+    {
+      prevElementType = astToVar(e.get());
+      constraintHandler->handle(astToVar(e.get()), prevElementType);
+    }
     elementTypes.push_back(astToVar(e.get()));
   }
+  // elementsType = prevElementType;
 
   constraintHandler->handle(astToVar(element),
                             std::make_shared<SipArray>(elementTypes));
@@ -314,11 +339,10 @@ void TypeConstraintVisitor::endVisit(ASTArrayExpr *element)
 /*! \brief Type constraints for array of initializations.
  *
  * Type rule for "[ E1 of En ]":
- *   [[ [ E1 of E2 ] ]] = [ v1 of v2 ]
- * where  v1 = [[E1]] and v2 = [[E2]]
- * E1 is the length of the array and E2 are the items
- * so we need to handle them separately as v1 neediing to resolve to an integer
- * and v2 needing to resolve to some type
+ *   [[ [ E1 of E2 ] ]] = v[]
+ * where  v = [[E2]]
+ * E1 is the length of the array and must be an integer and E2 are the items
+ * so we need to handle them separately
  */
 void TypeConstraintVisitor::endVisit(ASTArrayOfExpr *element)
 {
@@ -331,6 +355,66 @@ void TypeConstraintVisitor::endVisit(ASTArrayOfExpr *element)
 
   constraintHandler->handle(astToVar(element),
                             std::make_shared<SipArrayOf>(lengthType, elementType));
+}
+
+/*! \brief Type constraints for array ref.
+ *
+ * Type rule for "E1[E2]":
+ *   [[ E1[E2] ]] = v1
+ * where  v1 = [[E1]]
+ * E1 is the length of the array and E2 are the items
+ * so we need to handle them separately as v1 neediing to resolve to an integer
+ * and v2 needing to resolve to some type
+ */
+void TypeConstraintVisitor::endVisit(ASTArrayRefExpr *element)
+{
+  std::shared_ptr<TipType> indexType;
+  std::shared_ptr<TipType> arrayType;
+
+  indexType = astToVar(element->getIndex());
+  constraintHandler->handle(indexType, std::make_shared<TipInt>());
+  arrayType = astToVar(element->getArray());
+
+  std::shared_ptr<TipType> resultType = astToVar(element);
+  auto arrayTypeVar = std::make_shared<SipArray>(resultType);
+  constraintHandler->handle(arrayType, arrayTypeVar);
+
+  if (auto sipArray = std::dynamic_pointer_cast<SipArray>(arrayType))
+  {
+    constraintHandler->handle(resultType, sipArray->type);
+  }
+}
+
+/*! \brief Type constraints for unary expressions.
+ *
+ * Type rule for "E1[E2]":
+ *   [[ E1[E2] ]] = v1
+ * where  v1 = [[E1]]
+ * E1 is the length of the array and E2 are the items
+ * so we need to handle them separately as v1 neediing to resolve to an integer
+ * and v2 needing to resolve to some type
+ */
+void TypeConstraintVisitor::endVisit(ASTUnaryExpr *element)
+{
+  if (element->getOp() == "#")
+  {
+    constraintHandler->handle(astToVar(element), std::make_shared<TipInt>());
+  }
+  else if (element->getOp() == "!")
+  {
+    constraintHandler->handle(astToVar(element), std::make_shared<TipBool>());
+    constraintHandler->handle(astToVar(element->getExpr()), std::make_shared<TipBool>());
+  }
+  else if (element->getOp() == "-")
+  {
+    constraintHandler->handle(astToVar(element), std::make_shared<TipInt>());
+    constraintHandler->handle(astToVar(element->getExpr()), std::make_shared<TipInt>());
+  }
+  else if (element->getOp() == "++" || element->getOp() == "--")
+  {
+    constraintHandler->handle(astToVar(element), std::make_shared<TipInt>());
+    constraintHandler->handle(astToVar(element->getExpr()), std::make_shared<TipInt>());
+  }
 }
 
 /*! \brief Type constraints for record expression.

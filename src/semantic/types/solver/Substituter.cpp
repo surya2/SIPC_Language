@@ -63,11 +63,14 @@ void Substituter::endVisit(TipMu *element)
 void Substituter::endVisit(SipArray *element)
 {
   std::vector<std::shared_ptr<TipType>> elementTypes;
+  bool first = true;
   for (auto &element : element->getArguments())
   {
     elementTypes.push_back(std::move(visitedTypes.back()));
     visitedTypes.pop_back();
   }
+
+  std::shared_ptr<TipType> elementsType = elementTypes.front();
 
   // the post-order visit will reverse the arguments in visitedTypes
   // so we set them right here

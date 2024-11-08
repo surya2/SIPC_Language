@@ -2,10 +2,24 @@
 #include "TipTypeVisitor.h"
 
 SipArray::SipArray(std::vector<std::shared_ptr<TipType>> elements)
-    : TipCons(elements) {}
+    : type(elements.front()), TipCons(std::vector<std::shared_ptr<TipType>>{elements.front()}) {}
+SipArray::SipArray(std::shared_ptr<TipType> elementsType)
+    : type(elementsType), TipCons(std::vector<std::shared_ptr<TipType>>{elementsType}) {}
 
 std::ostream &SipArray::print(std::ostream &out) const
 {
+  if (dynamic_cast<const TipInt *>(type.get()))
+  {
+    out << "int";
+  }
+  else if (dynamic_cast<const TipBool *>(type.get()))
+  {
+    out << "bool";
+  }
+  else
+  {
+    out << *arguments.front();
+  }
   out << "[";
   bool first = true;
   int i = 0;
@@ -32,17 +46,27 @@ bool SipArray::operator==(const TipType &other) const
     return false;
   }
 
-  if (arity() != sipArray->arity())
+  // if (arity() != sipArray->arity())
+  // {
+  //   return false;
+  // }
+
+  // for (int i = 0; i < arity(); i++)
+  // {
+  //   if (*(arguments.at(i)) != *(sipArray->arguments.at(i)))
+  //   {
+  //     return false;
+  //   }
+  // }
+
+  // && *arguments.front() != *sipArray->arguments.front()
+  if (*arguments.front() == *sipArray->arguments.front())
+  {
+    return true;
+  }
+  else
   {
     return false;
-  }
-
-  for (int i = 0; i < arity(); i++)
-  {
-    if (*(arguments.at(i)) != *(sipArray->arguments.at(i)))
-    {
-      return false;
-    }
   }
 
   return true;
