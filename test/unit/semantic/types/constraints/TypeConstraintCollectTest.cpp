@@ -1157,3 +1157,99 @@ TEST_CASE("TypeConstraintVisitor: iterator loop with records", "[TypeConstraintV
   REQUIRE(*unifier.inferred(zType) == *TypeHelper::intType());
   REQUIRE(*unifier.inferred(fType) == *TypeHelper::funType(empty, TypeHelper::intType()));
 }
+
+/*
+ * --------------------------------------------------------------
+ * Testing function calls and the types that they return
+ * --------------------------------------------------------------
+ */
+
+TEST_CASE("TypeConstraintVisitor: function call", "[TypeConstraintVisitor]")
+{
+  std::stringstream program;
+  program << R"(
+// [[foo]] = ()->int, [[bar]] = ()->int
+foo() {
+    var x;
+    x = bar();
+    return x;
+}
+
+bar() {
+    return 3;
+}
+  )";
+
+  auto unifierSymbols = collectAndSolve(program);
+  auto unifier = unifierSymbols.first;
+  auto symbols = unifierSymbols.second;
+  auto fDecl = symbols->getFunction("foo");
+  auto fType = std::make_shared<TipVar>(fDecl);
+
+  auto xType = std::make_shared<TipVar>(symbols->getLocal("x", fDecl));
+  auto barType = std::make_shared<TipVar>(symbols->getFunction("bar"));
+
+  REQUIRE(*unifier.inferred(fType) == *TypeHelper::funType(std::vector<std::shared_ptr<TipType>>{}, TypeHelper::intType()));
+  REQUIRE(*unifier.inferred(xType) == *TypeHelper::intType());
+  REQUIRE(*unifier.inferred(barType) == *TypeHelper::funType(std::vector<std::shared_ptr<TipType>>{}, TypeHelper::intType()));
+}
+
+TEST_CASE("TypeConstraintVisitor: function call with arguments", "[TypeConstraintVisitor]")
+{
+  std::stringstream program;
+  program << R"(
+// [[foo]] = ()->int, [[bar]] = (int)->int
+foo() {
+    var x;
+    x = bar(3);
+    return x;
+}
+
+bar(y) {
+    return y;
+}
+  )";
+
+  auto unifierSymbols = collectAndSolve(program);
+  auto unifier = unifierSymbols.first;
+  auto symbols = unifierSymbols.second;
+  auto fDecl = symbols->getFunction("foo");
+  auto fType = std::make_shared<TipVar>(fDecl);
+
+  auto xType = std::make_shared<TipVar>(symbols->getLocal("x", fDecl));
+  auto barType = std::make_shared<TipVar>(symbols->getFunction("bar"));
+
+  REQUIRE(*unifier.inferred(fType) == *TypeHelper::funType(std::vector<std::shared_ptr<TipType>>{}, TypeHelper::intType()));
+  REQUIRE(*unifier.inferred(xType) == *TypeHelper::intType());
+  REQUIRE(*unifier.inferred(barType) == *TypeHelper::funType(std::vector<std::shared_ptr<TipType>>{TypeHelper::intType()}, TypeHelper::intType()));
+}
+
+TEST_CASE("TypeConstraintVisitor: function call with multiple arguments", "[TypeConstraintVisitor]")
+{
+  std::stringstream program;
+  program << R"(
+// [[foo]] = ()->int, [[bar]] = (int,int)->int
+foo() {
+    var x;
+    x = bar(3, 4);
+    return x;
+}
+
+bar(y, z) {
+    return y + z;
+}
+  )";
+
+  auto unifierSymbols = collectAndSolve(program);
+  auto unifier = unifierSymbols.first;
+  auto symbols = unifierSymbols.second;
+  auto fDecl = symbols->getFunction("foo");
+  auto fType = std::make_shared<TipVar>(fDecl);
+
+  auto xType = std::make_shared<TipVar>(symbols->getLocal("x", fDecl));
+  auto barType = std::make_shared<TipVar>(symbols->getFunction("bar"));
+
+  REQUIRE(*unifier.inferred(fType) == *TypeHelper::funType(std::vector<std::shared_ptr<TipType>>{}, TypeHelper::intType()));
+  REQUIRE(*unifier.inferred(xType) == *TypeHelper::intType());
+  REQUIRE(*unifier.inferred(barType) == *TypeHelper::funType(std::vector<std::shared_ptr<TipType>>{TypeHelper::intType(), TypeHelper::intType()}, TypeHelper::intType()));
+}
