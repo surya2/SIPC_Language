@@ -46,20 +46,6 @@ bool SipArray::operator==(const TipType &other) const
     return false;
   }
 
-  // if (arity() != sipArray->arity())
-  // {
-  //   return false;
-  // }
-
-  // for (int i = 0; i < arity(); i++)
-  // {
-  //   if (*(arguments.at(i)) != *(sipArray->arguments.at(i)))
-  //   {
-  //     return false;
-  //   }
-  // }
-
-  // && *arguments.front() != *sipArray->arguments.front()
   if (*arguments.front() == *sipArray->arguments.front())
   {
     return true;

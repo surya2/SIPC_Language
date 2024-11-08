@@ -9,7 +9,7 @@
 /*!
  * \class SipArrayOf
  *
- * \brief A proper type representing an array
+ * \brief A different representation of an array with a length/amount and a type/element
  */
 class SipArrayOf : public TipCons
 {

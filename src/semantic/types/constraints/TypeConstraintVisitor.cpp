@@ -107,7 +107,7 @@ void TypeConstraintVisitor::endVisit(ASTNumberExpr *element)
 
 /*! \brief Type constraints for boolean literal.
  *
- * Type rules for "B":
+ * Type rules for "B", a boolean literal like "true" or "false":
  *   [[B]] = bool
  */
 void TypeConstraintVisitor::endVisit(ASTBooleanExpr *element)
@@ -272,10 +272,12 @@ void TypeConstraintVisitor::endVisit(ASTWhileStmt *element)
                             std::make_shared<TipBool>());
 }
 
-/*! \brief Type constraints for while loop.
+/*! \brief Type constraints for for loop.
  *
- * Type rules for "while (E) S":
- *   [[E]] = int
+ * Type rules for "for (V : E1 .. E2 by E3) S":
+ *   [[V]] = [[E1]] = [[E2]] = [[E3]] = int
+ *
+ * If the step is not provided, a constraint is not generated for it.
  */
 void TypeConstraintVisitor::endVisit(ASTForLoopStmt *element)
 {
@@ -292,10 +294,14 @@ void TypeConstraintVisitor::endVisit(ASTForLoopStmt *element)
   }
 }
 
-/*! \brief Type constraints for while loop.
+/*! \brief Type constraints for iterator loop.
  *
- * Type rules for "while (E) S":
- *   [[E]] = int
+ * Type rules for "for (V in E) S":
+ *   [[V]] = type of elements in [[E]]  -->  [[E]] = array([[V]])
+ *
+ * Since V is an iterator, the type of V should be the same as the type of elements in the array that E holds.
+ * Thus, the type of V should be the same as the type that the array holds.
+ * This means that the type of an array that has V as an element should be the same as the type the E array.
  */
 void TypeConstraintVisitor::endVisit(ASTIterStmt *element)
 {
@@ -316,10 +322,11 @@ void TypeConstraintVisitor::endVisit(ASTIfStmt *element)
                             std::make_shared<TipBool>());
 }
 
-/*! \brief Type constraints for if statement.
+/*! \brief Type constraints for ternary expressions.
  *
- * Type rules for "if (E) S1 else S2":
- *   [[E]] = int
+ * Type rules for "E ? E1 : E2":
+ *   [[E1]] = [[E2]] = [[E ? E1 : E2]]
+ *   [[E]] = bool
  */
 void TypeConstraintVisitor::endVisit(ASTTernaryExpr *element)
 {
@@ -345,8 +352,12 @@ void TypeConstraintVisitor::endVisit(ASTOutputStmt *element)
 /*! \brief Type constraints for array initializations.
  *
  * Type rule for "[ E1, ..., En ]":
- *   [[ [ E1, ..., En ] ]] = v[]
+ *   [[ [ E1, ..., En ] ]] = v[v]
  * where v = [[Ei]] and all Ei are the same type
+ *
+ * In the type construction v[v], the outer v is the type that the array holds and the inner v is the type of the elements
+ * This type construction is redundant but it is used to make the type system more expressive to differentiate array type vs. array element type
+ * in the case that different types within the array are allowed/decided in the future
  */
 void TypeConstraintVisitor::endVisit(ASTArrayExpr *element)
 {
@@ -387,10 +398,11 @@ void TypeConstraintVisitor::endVisit(ASTArrayExpr *element)
 /*! \brief Type constraints for array of initializations.
  *
  * Type rule for "[ E1 of En ]":
- *   [[ [ E1 of E2 ] ]] = v[]
+ *   [[ [ E1 of E2 ] ]] = v[v]
  * where  v = [[E2]]
- * E1 is the length of the array and must be an integer and E2 are the items
- * so we need to handle them separately
+ *
+ * E1 is the length of the array and must be an integer and E2 are the items which can be of any type
+ * Thus, we need to handle the length and items separately
  */
 void TypeConstraintVisitor::endVisit(ASTArrayOfExpr *element)
 {
@@ -405,14 +417,15 @@ void TypeConstraintVisitor::endVisit(ASTArrayOfExpr *element)
                             std::make_shared<SipArrayOf>(lengthType, elementType));
 }
 
-/*! \brief Type constraints for array ref.
+/*! \brief Type constraints for array reference/indexing expression.
  *
  * Type rule for "E1[E2]":
- *   [[ E1[E2] ]] = v1
- * where  v1 = [[E1]]
- * E1 is the length of the array and E2 are the items
- * so we need to handle them separately as v1 neediing to resolve to an integer
- * and v2 needing to resolve to some type
+ *   [[ E1[E2] ]] = type of elements in [[E1]]  -->  [[E1]] = array([[ E1[E2] ]])
+ *
+ * Since E1[E2] essentially results in an element in E1 array, the type of E1[E2] should be the same as the type of
+ * elements in E1 or the type that the array holds.
+ *
+ * Thus, the type of an array that has E1[E2] as an element should be the same as the type E1 which contains similar type elements.
  */
 void TypeConstraintVisitor::endVisit(ASTArrayRefExpr *element)
 {
@@ -435,12 +448,12 @@ void TypeConstraintVisitor::endVisit(ASTArrayRefExpr *element)
 
 /*! \brief Type constraints for unary expressions.
  *
- * Type rule for "E1[E2]":
- *   [[ E1[E2] ]] = v1
- * where  v1 = [[E1]]
- * E1 is the length of the array and E2 are the items
- * so we need to handle them separately as v1 neediing to resolve to an integer
- * and v2 needing to resolve to some type
+ * Type rule for "op E" and "E op"; examples: "#E", "!E", "-E", "E++", "E--":
+ *   [[ op E ]] = [[ E ]]
+ *   [[ E op ]] = [[ E ]]
+ *
+ * In the case of "#E", "-E", "E++", and "E--", the type of E must be an integer
+ * In the case of "!E", the type of E must be a boolean
  */
 void TypeConstraintVisitor::endVisit(ASTUnaryExpr *element)
 {
