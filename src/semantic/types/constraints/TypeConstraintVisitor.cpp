@@ -131,11 +131,11 @@ void TypeConstraintVisitor::endVisit(ASTBinaryExpr *element)
   auto boolType = std::make_shared<TipBool>();
 
   // result type is integer
-  if (op == "&" || op == "|")
+  if (op == "&" || op == "|" || op == "<" || op == ">" || op == "<=" || op == ">=" || op == "==" || op == "!=")
   {
     constraintHandler->handle(astToVar(element), boolType);
   }
-  else
+  else if (op == "+" || op == "-" || op == "*" || op == "/" || op == "%")
   {
     constraintHandler->handle(astToVar(element), intType);
   }
@@ -269,7 +269,7 @@ void TypeConstraintVisitor::endVisit(ASTAssignStmt *element)
 void TypeConstraintVisitor::endVisit(ASTWhileStmt *element)
 {
   constraintHandler->handle(astToVar(element->getCondition()),
-                            std::make_shared<TipInt>());
+                            std::make_shared<TipBool>());
 }
 
 /*! \brief Type constraints for if statement.
@@ -280,7 +280,7 @@ void TypeConstraintVisitor::endVisit(ASTWhileStmt *element)
 void TypeConstraintVisitor::endVisit(ASTIfStmt *element)
 {
   constraintHandler->handle(astToVar(element->getCondition()),
-                            std::make_shared<TipInt>());
+                            std::make_shared<TipBool>());
 }
 
 /*! \brief Type constraints for output statement.
