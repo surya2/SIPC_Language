@@ -2,6 +2,7 @@
 
 1. **Deliverable 1:** _Extend parser to support SIP language_ - refer to `SOLUTION-D1.md` for solution and process
 2. **Deliverable 2:** _Extend AST tree build to support SIP language_ - refer to `SOLUTION-D2.md` for solution and process
+3. **Deliverable 3:** _Extend the semantic analyses to support SIP langauge_ - refer to `SOLUTION-D3.md` for solution and process
 
 <br />
 
