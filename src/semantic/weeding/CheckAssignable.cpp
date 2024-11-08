@@ -30,8 +30,8 @@ namespace
         return false;
       }
     }
-    // if (dynamic_cast<ASTArrayRefExpr *>(e))
-    //   return true;
+    if (dynamic_cast<ASTArrayRefExpr *>(e))
+      return true;
     return false;
   }
 } // namespace

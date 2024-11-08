@@ -42,4 +42,6 @@ public:
   virtual void endVisit(TipVar *element) {}
   virtual bool visit(TipBool *element) { return true; }
   virtual void endVisit(TipBool *element) {}
+  virtual bool visit(SipArray *element) { return true; }
+  virtual void endVisit(SipArray *element) {}
 };

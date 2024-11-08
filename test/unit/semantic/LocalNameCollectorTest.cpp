@@ -2,13 +2,14 @@
 #include "ASTNodeHelpers.h"
 #include "SemanticError.h"
 
-#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_test_macros.hpp>  
 
 #include <sstream>
 
 TEST_CASE(
     "LocalNameCollector: Test identifier conflicts with function declaration",
-    "[LocalNameCollector]") {
+    "[LocalNameCollector]")
+{
   // Seed the function map and visit its declaration.
   std::map<std::string, std::pair<ASTDeclNode *, bool>> fmap;
   ASTDeclNode mockFunctionNameDecl("foobar");

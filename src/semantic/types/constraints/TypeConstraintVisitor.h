@@ -42,6 +42,9 @@ public:
   bool visit(ASTFunction *element) override;
   void endVisit(ASTAccessExpr *element) override;
   void endVisit(ASTAllocExpr *element) override;
+  void endVisit(ASTArrayExpr *element) override;
+  void endVisit(ASTArrayOfExpr *element) override;
+  void endVisit(ASTArrayRefExpr *element) override;
   void endVisit(ASTAssignStmt *element) override;
   void endVisit(ASTBinaryExpr *element) override;
   void endVisit(ASTBooleanExpr *element) override;
@@ -56,7 +59,11 @@ public:
   void endVisit(ASTOutputStmt *element) override;
   void endVisit(ASTRecordExpr *element) override;
   void endVisit(ASTRefExpr *element) override;
+  void endVisit(ASTTernaryExpr *element) override;
   void endVisit(ASTWhileStmt *element) override;
+  void endVisit(ASTForLoopStmt *element) override;
+  void endVisit(ASTIterStmt *element) override;
+  void endVisit(ASTUnaryExpr *element) override;
 
 protected:
   std::shared_ptr<ConstraintHandler> constraintHandler;

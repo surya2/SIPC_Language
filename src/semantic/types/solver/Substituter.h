@@ -36,6 +36,7 @@ public:
   std::shared_ptr<TipType> getResult();
 
   virtual void endVisit(TipAlpha *element) override;
+  virtual void endVisit(SipArray *element) override;
   virtual void endVisit(TipFunction *element) override;
   virtual void endVisit(TipInt *element) override;
   virtual void endVisit(TipBool *element) override;

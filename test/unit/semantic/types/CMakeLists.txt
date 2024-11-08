@@ -9,6 +9,7 @@ target_sources(
     ${CMAKE_CURRENT_SOURCE_DIR}/concrete/TipIntTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/concrete/TipMuTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/concrete/TipRecordTest.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/concrete/SipArrayTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/concrete/TipAbsentFieldTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/concrete/TipRefTest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/concrete/TipVarTest.cpp
@@ -32,9 +33,9 @@ target_include_directories(
           ${CMAKE_SOURCE_DIR}/test/unit/matchers)
 target_link_libraries(
   typeinference_unit_tests
-  PRIVATE antlr4_static
+  PRIVATE ast
+          antlr4_static
           ${llvm_libs}
-          ast
           types
           symboltable
           frontend

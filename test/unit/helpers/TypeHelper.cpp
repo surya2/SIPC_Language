@@ -8,6 +8,7 @@
 #include "TipRef.h"
 #include "TipRecord.h"
 #include "TipAbsentField.h"
+#include "SipArray.h"
 
 std::shared_ptr<TipType> TypeHelper::intType()
 {
@@ -42,4 +43,14 @@ std::shared_ptr<TipType> TypeHelper::recType(std::vector<std::shared_ptr<TipType
 std::shared_ptr<TipType> TypeHelper::absentType()
 {
     return std::make_shared<TipAbsentField>();
+}
+
+std::shared_ptr<TipType> TypeHelper::arrayType(std::shared_ptr<TipType> t, std::vector<std::shared_ptr<TipType>> ts)
+{
+    return std::make_shared<SipArray>(ts);
+}
+
+std::shared_ptr<TipType> TypeHelper::arrayType(std::shared_ptr<TipType> t, std::shared_ptr<TipType> ts)
+{
+    return std::make_shared<SipArray>(ts);
 }
