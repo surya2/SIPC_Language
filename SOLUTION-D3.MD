@@ -8,7 +8,7 @@ One major imporvement we made from Deliverable 2 to make implementation easier f
 
 Rather than the AST nodes, which often followed very similar implementation structure for very different features, implementing semantics was far more varied across different feature types, depending on whether they needed entirely new concrete semantic types in the most difficult cases, or on the other end of the spectrum if they strictly followed with the semantics of existing feature categories, and only needed few line additions. With that said, some commonalities remained, like adapting `TypeConstraintVisitor.cpp` to accommodate type checking of the newly implemented features, and, as always creating new tests.
 
-The general process is outlined in this workflow [document](https://docs.google.com/document/d/1sMwRkiGzycrzBrHIaQn-7JFmhP84LtrqLAqr3SXR7D8/edit?usp=sharing).
+The general process is outlined in this workflow [document](https://docs.google.com/document/d/1Hce00A5ALfJdaIbmNF25eiGG_d5Go-SKevTOxiAyM2g/edit?usp=sharing).
 
 ### Identifying and Implementing Constraints
 
