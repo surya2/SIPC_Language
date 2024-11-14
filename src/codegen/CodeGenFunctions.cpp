@@ -1250,7 +1250,7 @@ llvm::Value *ASTTernaryExpr::codegen()
 
   llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
 
-  labelNum++; // create shared labels for these BBs
+  labelNum++;
   llvm::BasicBlock *TrueBB = llvm::BasicBlock::Create(
       llvmContext, "true_expr" + std::to_string(labelNum), TheFunction);
   llvm::BasicBlock *FalseBB = llvm::BasicBlock::Create(
@@ -1291,9 +1291,86 @@ llvm::Value *ASTIterStmt::codegen()
 {
   LOG_S(1) << "Generating code for " << *this;
 
-  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
-                                2);
-} // LCOV_EXCL_LINE
+  llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
+  labelNum++;
+
+  llvm::BasicBlock *InitBB = llvm::BasicBlock::Create(
+      llvmContext, "init" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *HeaderBB = llvm::BasicBlock::Create(
+      llvmContext, "header" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *BodyBB = llvm::BasicBlock::Create(
+      llvmContext, "body" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *ExitBB = llvm::BasicBlock::Create(
+      llvmContext, "exit" + std::to_string(labelNum), TheFunction);
+
+  irBuilder.CreateBr(InitBB);
+  irBuilder.SetInsertPoint(InitBB);
+
+  llvm::Type *elementType = llvm::Type::getInt64Ty(llvmContext);
+  llvm::ArrayType *arrayType = llvm::ArrayType::get(elementType, 0);
+  llvm::Value *arrayPtr = ITERABLE->codegen();
+  auto *arrayPtrCasted = irBuilder.CreateIntToPtr(arrayPtr, arrayType->getPointerTo(), "arrayPtrCast");
+
+  if (!arrayPtr)
+  {
+    throw InternalError("failed to generate bitcode for the iterable");
+  }
+
+  lValueGen = true;
+  llvm::Value *ElementAlloc = ELEMENT->codegen();
+  lValueGen = false;
+  llvm::Value *indexVal = llvm::ConstantInt::get(llvm::Type::getInt32Ty(llvmContext), 0, true);
+
+  irBuilder.CreateBr(HeaderBB);
+
+  irBuilder.SetInsertPoint(HeaderBB);
+
+  llvm::Value *arraySize = nullptr;
+
+  if (auto *arrayExpr = dynamic_cast<ASTArrayExpr *>(getIterable()))
+  {
+    arraySize = arrayExpr->getLen()->codegen();
+  }
+  else if (auto *arrayOfExpr = dynamic_cast<ASTArrayOfExpr *>(getIterable()))
+  {
+    arraySize = arrayOfExpr->getLength()->codegen();
+  }
+  else
+  {
+    throw InternalError("Unknown iterable type");
+  }
+
+  if (!arraySize)
+  {
+    throw InternalError("Failed to retrieve array length for the iterable");
+  }
+
+  llvm::Value *CondV = irBuilder.CreateICmpSLT(indexVal, arraySize, "itercond");
+  irBuilder.CreateCondBr(CondV, BodyBB, ExitBB);
+
+  irBuilder.SetInsertPoint(BodyBB);
+
+  llvm::Value *elementPtr = irBuilder.CreateGEP(arrayType, arrayPtrCasted,
+                                                {llvm::ConstantInt::get(llvm::Type::getInt32Ty(llvmContext), 0), indexVal},
+                                                "arrayElementPtr");
+  llvm::Value *elementVal = irBuilder.CreateLoad(elementType, elementPtr, "arrayElement");
+
+  irBuilder.CreateStore(elementVal, ElementAlloc);
+
+  llvm::Value *BodyV = BODY->codegen();
+  if (!BodyV)
+  {
+    throw InternalError("failed to generate bitcode for the loop body");
+  }
+
+  llvm::Value *NextIndex = irBuilder.CreateAdd(indexVal, llvm::ConstantInt::get(indexVal->getType(), 1), "nextindex");
+  indexVal = NextIndex;
+
+  irBuilder.CreateBr(HeaderBB);
+
+  irBuilder.SetInsertPoint(ExitBB);
+  return irBuilder.CreateCall(nop);
+}
 
 /*
  * The code generated for an IfStmt looks like this:

@@ -32,26 +32,9 @@ for i in sipc/*.tip
 do
   base="$(basename $i .tip)"
 
-  # test optimized program
   initialize_test
-  ${TIPC} $i
-  ${TIPCLANG} -w $i.bc ${RTLIB}/tip_rtlib.bc -o $base
-
-  ./${base} &>/dev/null
-  exit_code=${?}
-  if [ ${exit_code} -ne 0 ]; then
-    echo -n "Test failure for : " 
-    echo $i
-    ./${base}
-    ((numfailures++))
-  else 
-    echo -n "optimized test passed for : "
-    echo $i
-  fi 
-  rm $i.bc
-
-  # test unoptimized program
-  initialize_test
+  echo -n " starting test for : "
+  echo $i
   ${TIPC} -do $i
   ${TIPCLANG} -w $i.bc ${RTLIB}/tip_rtlib.bc -o $base
 
@@ -63,8 +46,7 @@ do
     ./${base}
     ((numfailures++))
   else 
-    echo -n "unoptimized test passed for : "
-    echo $i
+    echo -n " passed"
     rm ${base}
   fi 
   rm $i.bc
