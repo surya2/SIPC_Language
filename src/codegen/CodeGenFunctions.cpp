@@ -456,7 +456,7 @@ llvm::Value *ASTBooleanExpr::codegen()
 {
   LOG_S(1) << "Generating code for " << *this;
 
-  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
+  return llvm::ConstantInt::get(llvm::Type::getInt1Ty(llvmContext),
                                 getValue());
 } // LCOV_EXCL_LINE
 
@@ -523,6 +523,19 @@ llvm::Value *ASTBinaryExpr::codegen()
     return irBuilder.CreateIntCast(
         cmp, llvm::IntegerType::getInt64Ty(llvmContext), false, "neqtmp");
   }
+  else if (getOp() == "&")
+  {
+    L = irBuilder.CreateICmpNE(L, zeroV, "and.lhs");
+    R = irBuilder.CreateICmpNE(R, zeroV, "and.rhs");
+    return irBuilder.CreateAnd(L, R, "andtmp");
+  }
+  else if (getOp() == "|")
+  {
+    L = irBuilder.CreateICmpNE(L, zeroV, "or.lhs");
+    R = irBuilder.CreateICmpNE(R, zeroV, "or.rhs");
+    return irBuilder.CreateOr(L, R, "ortmp");
+  }
+
   else
   {
     throw InternalError("Invalid binary operator: " + OP);
