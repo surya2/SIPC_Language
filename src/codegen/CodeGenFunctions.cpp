@@ -1127,16 +1127,80 @@ llvm::Value *ASTWhileStmt::codegen()
   return irBuilder.CreateCall(nop);
 } // LCOV_EXCL_LINE
 
-/*
- * Implement later...
- */
 llvm::Value *ASTForLoopStmt::codegen()
 {
   LOG_S(1) << "Generating code for " << *this;
 
-  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
-                                2);
-} // LCOV_EXCL_LINE
+  llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
+  labelNum++;
+
+  llvm::BasicBlock *InitBB = llvm::BasicBlock::Create(
+      llvmContext, "init" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *HeaderBB = llvm::BasicBlock::Create(
+      llvmContext, "header" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *BodyBB = llvm::BasicBlock::Create(
+      llvmContext, "body" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *UpdateBB = llvm::BasicBlock::Create(
+      llvmContext, "update" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *ExitBB = llvm::BasicBlock::Create(
+      llvmContext, "exit" + std::to_string(labelNum), TheFunction);
+
+  irBuilder.CreateBr(InitBB);
+  irBuilder.SetInsertPoint(InitBB);
+
+  llvm::Value *StartVal = START->codegen();
+  if (!StartVal)
+  {
+    throw InternalError("failed to generate bitcode for the start value");
+  }
+
+  // missed this for quite a while, but this bit is stolen from assignment statement - you need it to extract the variable from getVar()
+  lValueGen = true;
+  llvm::Value *VarAlloc = getVar()->codegen();
+  lValueGen = false;
+
+  irBuilder.CreateStore(StartVal, VarAlloc);
+
+  // Branch to header to begin the loop
+  irBuilder.CreateBr(HeaderBB);
+
+  // Emit loop condition check (header)
+  irBuilder.SetInsertPoint(HeaderBB);
+  llvm::Value *EndVal = END->codegen();
+  if (!EndVal)
+  {
+    throw InternalError("failed to generate bitcode for the end value");
+  }
+  llvm::Value *CurrentVal = irBuilder.CreateLoad(StartVal->getType(), VarAlloc, "currentval");
+  llvm::Value *CondV = irBuilder.CreateICmpSLE(CurrentVal, EndVal, "loopcond");
+
+  irBuilder.CreateCondBr(CondV, BodyBB, ExitBB);
+
+  // Emit loop body
+  irBuilder.SetInsertPoint(BodyBB);
+  llvm::Value *BodyV = BODY->codegen();
+  if (!BodyV)
+  {
+    throw InternalError("failed to generate bitcode for the loop body");
+  }
+  irBuilder.CreateBr(UpdateBB);
+
+  // Emit loop variable update
+  irBuilder.SetInsertPoint(UpdateBB);
+  llvm::Value *StepVal = STEP ? STEP->codegen() : llvm::ConstantInt::get(CurrentVal->getType(), 1);
+  if (!StepVal)
+  {
+    throw InternalError("failed to generate bitcode for the step value");
+  }
+  llvm::Value *NextVal = irBuilder.CreateAdd(CurrentVal, StepVal, "nextval");
+  irBuilder.CreateStore(NextVal, VarAlloc);
+
+  irBuilder.CreateBr(HeaderBB);
+
+  // Emit loop exit block
+  irBuilder.SetInsertPoint(ExitBB);
+  return irBuilder.CreateCall(nop); // End of loop, nop call to finalize
+}
 
 llvm::Value *ASTTernaryExpr::codegen()
 {
