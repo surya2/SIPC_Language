@@ -931,16 +931,31 @@ llvm::Value *ASTAccessExpr::codegen()
       fieldLoad, llvm::Type::getInt64Ty(llvmContext), "fieldAccess");
 }
 
-/*
- * Implement later...
- */
 llvm::Value *ASTArrayExpr::codegen()
 {
   LOG_S(1) << "Generating code for " << *this;
 
-  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
-                                2);
-} // LCOV_EXCL_LINE
+  llvm::Type *elementType = llvm::Type::getInt64Ty(llvmContext);
+  llvm::ArrayType *arrayType = llvm::ArrayType::get(elementType, LEN);
+  llvm::AllocaInst *arrayAlloca = irBuilder.CreateAlloca(arrayType, nullptr, "arrayTmp");
+
+  for (int i = 0; i < ITEMS.size(); ++i)
+  {
+    llvm::Value *itemValue = ITEMS[i]->codegen();
+    if (!itemValue)
+    {
+      LOG_S(1) << "Failed to generate code for array element";
+      return nullptr;
+    }
+
+    llvm::Value *elementPtr = irBuilder.CreateGEP(arrayType, arrayAlloca,
+                                                  {llvm::ConstantInt::get(llvm::Type::getInt32Ty(llvmContext), 0),
+                                                   llvm::ConstantInt::get(llvm::Type::getInt32Ty(llvmContext), i)});
+    irBuilder.CreateStore(itemValue, elementPtr);
+  }
+
+  return arrayAlloca;
+}
 
 /*
  * Implement later...
@@ -953,27 +968,45 @@ llvm::Value *ASTArrayOfExpr::codegen()
                                 2);
 } // LCOV_EXCL_LINE
 
-/*
- * Implement later...
- */
 llvm::Value *ASTArrayRefExpr::codegen()
 {
-  LOG_S(1) << "Generating code for " << *this;
+  LOG_S(1) << "Generating code for array reference " << *this;
 
-  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
-                                2);
-} // LCOV_EXCL_LINE
+  llvm::Type *elementType = llvm::Type::getInt64Ty(llvmContext);
+  llvm::ArrayType *arrayType = llvm::ArrayType::get(elementType, 0);
+  llvm::Value *arrayPtr = ARRAY->codegen();
 
-/*
- * Implement later...
- */
-llvm::Value *ASTIncDecStmt::codegen()
-{
-  LOG_S(1) << "Generating code for " << *this;
+  if (!arrayPtr)
+  {
+    LOG_S(1) << "Failed to generate code for array reference";
+    return nullptr;
+  }
 
-  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
-                                2);
-} // LCOV_EXCL_LINE
+  // Cast arrayPtr to a pointer to the array type
+  auto *arrayPtrCasted = irBuilder.CreateIntToPtr(arrayPtr, arrayType->getPointerTo(), "arrayPtrCast");
+
+  // Now use arrayPtrCasted in the GEP instruction
+  llvm::Value *indexVal = INDEX->codegen();
+  if (!indexVal)
+  {
+    LOG_S(1) << "Failed to generate code for index expression";
+    return nullptr;
+  }
+
+  if (indexVal->getType() != llvm::Type::getInt32Ty(llvmContext))
+  {
+    indexVal = irBuilder.CreateIntCast(indexVal, llvm::Type::getInt32Ty(llvmContext), true, "indexCast");
+  }
+
+  llvm::Value *elementPtr = irBuilder.CreateGEP(arrayType, arrayPtrCasted,
+                                                {llvm::ConstantInt::get(llvm::Type::getInt32Ty(llvmContext), 0), indexVal},
+                                                "arrayElementPtr");
+
+  // Load the element value
+  llvm::Value *elementVal = irBuilder.CreateLoad(elementType, elementPtr, "arrayElement");
+
+  return elementVal;
+}
 
 llvm::Value *ASTDeclNode::codegen()
 {
@@ -1199,7 +1232,7 @@ llvm::Value *ASTForLoopStmt::codegen()
 
   // Emit loop exit block
   irBuilder.SetInsertPoint(ExitBB);
-  return irBuilder.CreateCall(nop); // End of loop, nop call to finalize
+  return irBuilder.CreateCall(nop);
 }
 
 llvm::Value *ASTTernaryExpr::codegen()
@@ -1254,9 +1287,6 @@ llvm::Value *ASTTernaryExpr::codegen()
   return PN; // Return the PHI node, which selects the correct value
 }
 
-/*
- * Implement later...
- */
 llvm::Value *ASTIterStmt::codegen()
 {
   LOG_S(1) << "Generating code for " << *this;

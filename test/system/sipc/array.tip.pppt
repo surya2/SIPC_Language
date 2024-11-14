@@ -1,0 +1,13 @@
+a() 
+{
+  var x;
+  x = [1, 2, 3];
+  return x[2];
+}
+
+main() 
+{
+  if ((a() != 3)) 
+    error a();
+  return 0;
+}
