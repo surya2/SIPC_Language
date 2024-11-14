@@ -1,4 +1,8 @@
 # Deliverable 3 Solution Design
 
-## Improvements from Deliverable 2
+## General Procedure
+
+
+## TODO: active problems
+1. need implict cast from int to boolean
 

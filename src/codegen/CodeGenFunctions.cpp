@@ -542,16 +542,45 @@ llvm::Value *ASTBinaryExpr::codegen()
   }
 }
 
-/*
- * Implement later...
- */
 llvm::Value *ASTUnaryExpr::codegen()
 {
   LOG_S(1) << "Generating code for " << *this;
 
-  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
-                                2);
-} // LCOV_EXCL_LINE
+  llvm::Value *operand = getExpr()->codegen();
+  if (operand == nullptr)
+  {
+    throw InternalError("null unary operand");
+  }
+
+  // Determine the operation based on the operator
+  if (getOp() == "!")
+  {
+    // Logical NOT: Check if the operand is non-zero and negate it
+    operand = irBuilder.CreateICmpEQ(operand, llvm::ConstantInt::get(operand->getType(), 0), "nottmp");
+    return irBuilder.CreateIntCast(operand, llvm::IntegerType::getInt64Ty(llvmContext), false, "notcasttmp");
+  }
+  else if (getOp() == "-")
+  {
+    // Arithmetic negation
+    return irBuilder.CreateNeg(operand, "negtmp");
+  }
+  else if (getOp() == "++")
+  {
+    // Increment: Add 1 to the operand
+    llvm::Value *one = llvm::ConstantInt::get(operand->getType(), 1);
+    return irBuilder.CreateAdd(operand, one, "incmp");
+  }
+  else if (getOp() == "--")
+  {
+    // Decrement: Subtract 1 from the operand
+    llvm::Value *one = llvm::ConstantInt::get(operand->getType(), 1);
+    return irBuilder.CreateSub(operand, one, "decmp");
+  }
+  else
+  {
+    throw InternalError("Invalid unary operator: " + getOp());
+  }
+}
 
 /*
  * First lookup the variable in the symbol table for names and
