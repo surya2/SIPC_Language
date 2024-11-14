@@ -1,0 +1,67 @@
+a() {
+    var x;
+    x = 0;
+    if (1<2) x=1;
+    return x;   
+}
+
+b() {
+    var x;
+    x = 0;
+    if (2<1) x=1;
+    return x;   
+}
+
+c() {
+    var x;
+    x = 0;
+    if (2<=1) x=1;
+    return x;   
+}
+
+d() {
+    var x;
+    x = 0;
+    if (2<=2) x=1;
+    return x;   
+}
+
+e() {
+    var x;
+    x = 0;
+    if (1<=2) x=1;
+    return x;   
+}
+
+f() {
+    var x;
+    x = 0;
+    if (2>=1) x=1;
+    return x;   
+}
+
+g() {
+    var x;
+    x = 0;
+    if (2>=2) x=1;
+    return x;   
+}
+
+h() {
+    var x;
+    x = 0;
+    if (1>=2) x=1;
+    return x;   
+}
+
+main() {
+    if (a() != 1) error a();
+    if (b() != 0) error b();
+    if (c() != 0) error c();
+    if (d() != 1) error d();
+    if (e() != 1) error e();
+    if (f() != 1) error f();
+    if (g() != 1) error g();
+    if (h() != 0) error h();
+    return 0;
+}

@@ -493,6 +493,24 @@ llvm::Value *ASTBinaryExpr::codegen()
     return irBuilder.CreateIntCast(
         cmp, llvm::IntegerType::getInt64Ty(llvmContext), false, "gttmp");
   }
+  else if (getOp() == ">=")
+  {
+    auto *cmp = irBuilder.CreateICmpSGE(L, R, "_gettmp");
+    return irBuilder.CreateIntCast(
+        cmp, llvm::IntegerType::getInt64Ty(llvmContext), false, "gettmp");
+  }
+  else if (getOp() == "<")
+  {
+    auto *cmp = irBuilder.CreateICmpSLT(L, R, "_lttmp");
+    return irBuilder.CreateIntCast(
+        cmp, llvm::IntegerType::getInt64Ty(llvmContext), false, "lttmp");
+  }
+  else if (getOp() == "<=")
+  {
+    auto *cmp = irBuilder.CreateICmpSLE(L, R, "_lettmp");
+    return irBuilder.CreateIntCast(
+        cmp, llvm::IntegerType::getInt64Ty(llvmContext), false, "lettmp");
+  }
   else if (getOp() == "==")
   {
     auto *cmp = irBuilder.CreateICmpEQ(L, R, "_eqtmp");
@@ -1082,9 +1100,53 @@ llvm::Value *ASTTernaryExpr::codegen()
 {
   LOG_S(1) << "Generating code for " << *this;
 
-  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
-                                2);
-} // LCOV_EXCL_LINE
+  llvm::Value *CondV = getCondition()->codegen();
+  if (CondV == nullptr)
+  {
+    throw InternalError("failed to generate bitcode for the condition of the if statement");
+  }
+
+  CondV = irBuilder.CreateICmpNE(
+      CondV, llvm::ConstantInt::get(CondV->getType(), 0), "ternarycond");
+
+  llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
+
+  labelNum++; // create shared labels for these BBs
+  llvm::BasicBlock *TrueBB = llvm::BasicBlock::Create(
+      llvmContext, "true_expr" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *FalseBB = llvm::BasicBlock::Create(
+      llvmContext, "false_expr" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *MergeBB = llvm::BasicBlock::Create(
+      llvmContext, "ternarymerge" + std::to_string(labelNum), TheFunction);
+
+  irBuilder.CreateCondBr(CondV, TrueBB, FalseBB);
+
+  llvm::Value *TrueV, *FalseV;
+  {
+    irBuilder.SetInsertPoint(TrueBB);
+    TrueV = getTrueExpr()->codegen();
+    if (!TrueV)
+      throw InternalError("failed to generate bitcode for true expression");
+
+    irBuilder.CreateBr(MergeBB);
+  }
+
+  {
+    irBuilder.SetInsertPoint(FalseBB);
+    FalseV = getFalseExpr()->codegen();
+    if (!FalseV)
+      throw InternalError("failed to generate bitcode for false expression");
+
+    irBuilder.CreateBr(MergeBB);
+  }
+
+  irBuilder.SetInsertPoint(MergeBB);
+  llvm::PHINode *PN = irBuilder.CreatePHI(TrueV->getType(), 2, "iftmp");
+  PN->addIncoming(TrueV, TrueBB);
+  PN->addIncoming(FalseV, FalseBB);
+
+  return PN; // Return the PHI node, which selects the correct value
+}
 
 /*
  * Implement later...

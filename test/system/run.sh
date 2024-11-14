@@ -64,6 +64,50 @@ do
   rm $i.bc
 done
 
+#self contained test cases for SIPC
+#note: should change file extension to .sip?
+# Self contained test cases
+for i in sipc/*.tip
+do
+  base="$(basename $i .tip)"
+
+  # test optimized program
+  initialize_test
+  ${TIPC} $i
+  ${TIPCLANG} -w $i.bc ${RTLIB}/tip_rtlib.bc -o $base
+
+  ./${base} &>/dev/null
+  exit_code=${?}
+  if [ ${exit_code} -ne 0 ]; then
+    echo -n "Test failure for : " 
+    echo $i
+    ./${base}
+    ((numfailures++))
+  else 
+    rm ${base}
+  fi 
+  rm $i.bc
+
+  # test unoptimized program
+  initialize_test
+  ${TIPC} -do $i
+  ${TIPCLANG} -w $i.bc ${RTLIB}/tip_rtlib.bc -o $base
+
+  ./${base} &>/dev/null
+  exit_code=${?}
+  if [ ${exit_code} -ne 0 ]; then
+    echo -n "Test failure for : " 
+    echo $i
+    ./${base}
+    ((numfailures++))
+  else 
+    rm ${base}
+  fi 
+  rm $i.bc
+done
+
+
+
 # IO related test cases
 for i in iotests/*.expected
 do
@@ -226,6 +270,34 @@ do
     ((numfailures++))
   fi 
 done
+
+#type checking and pretty printing of SIPC
+for i in sipc/*.tip
+do
+  initialize_test
+  base="$(basename $i .tip)"
+  expected="$i.pppt"  # Expected pretty print output file
+  generated="${SCRATCH_DIR}/$base.pppt"  # Generated output for this test run
+
+  # Run the type-checking and pretty-printing
+  ${TIPC} -pp -pt $i > "$generated"
+
+  # TEMP CODE: if expected pretty print output does not exist, saves generated as expected
+  if [[ ! -f "$expected" ]]; then
+    echo "No expected output found for $i. Saving generated output as expected."
+    cp "$generated" "$expected"  # Save generated output as expected for next run
+  else
+    # If the expected file exists, compare it with the generated output
+    diff "$expected" "$generated" > "${SCRATCH_DIR}/$base.diff"
+    if [[ -s ${SCRATCH_DIR}/$base.diff ]]; then
+      echo -n "Test differences for : " 
+      echo $i
+      cat "${SCRATCH_DIR}/$base.diff"
+      ((numfailures++))
+    fi 
+  fi
+done
+
 
 # Test unwritable output file for both ast and call graph printing
 initialize_test

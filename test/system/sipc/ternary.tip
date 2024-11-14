@@ -1,0 +1,17 @@
+f() {
+  var x;
+  x = 1 > 2? 1 : 2;
+  return x;
+}
+
+g() {
+  var x;
+  x = 2 > 1? 1 : 2;
+  return x;
+}
+
+main() {
+    if(f() != 2) error f();
+    if(g() != 1) error g();
+    return 0;
+}
