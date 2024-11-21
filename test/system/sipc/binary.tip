@@ -54,6 +54,10 @@ h() {
     return x;   
 }
 
+i(){
+    return 5 % 2;
+}
+
 main() {
     if (a() != 1) error a();
     if (b() != 0) error b();
@@ -63,5 +67,6 @@ main() {
     if (f() != 1) error f();
     if (g() != 1) error g();
     if (h() != 0) error h();
+    if (i() != 1) error i();
     return 0;
 }

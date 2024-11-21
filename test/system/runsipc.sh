@@ -1,15 +1,16 @@
 #!/bin/bash
+
 declare -r ROOT_DIR=${TRAVIS_BUILD_DIR:-$(git rev-parse --show-toplevel)}
 declare -r TIPC=${ROOT_DIR}/build/src/tipc
 declare -r RTLIB=${ROOT_DIR}/rtlib
 declare -r SCRATCH_DIR=$(mktemp -d)
 
 if [ -z "${TIPCLANG}" ]; then
-  echo error: TIPCLANG env var must be set
+  echo "Error: TIPCLANG environment variable must be set."
   exit 1
 fi
 
-curdir="$(basename `pwd`)"
+curdir="$(basename $(pwd))"
 if [ "${curdir}" != "system" ]; then
   echo "Test runner must be executed in .../tipc/test/system"
   exit 1
@@ -19,77 +20,41 @@ numtests=0
 numfailures=0
 
 initialize_test() {
-  echo -n "."
   rm -f ${SCRATCH_DIR}/*
   ((numtests++))
 }
 
+echo "Running tests..."
 
-#self contained test cases for SIPC
-#note: should change file extension to .sip?
-# Self contained test cases
-for i in sipc/*.tip
-do
+for i in sipc/*.tip; do
   base="$(basename $i .tip)"
-
+  
   initialize_test
-  echo -n " starting test for : "
-  echo $i
+  echo
+  echo "Starting test: $i"
+
   ${TIPC} -do $i
   ${TIPCLANG} -w $i.bc ${RTLIB}/tip_rtlib.bc -o $base
 
   ./${base} &>/dev/null
   exit_code=${?}
+  
   if [ ${exit_code} -ne 0 ]; then
-    echo -n "Test failure for : " 
-    echo $i
-    ./${base}
+    echo "FAIL: $i"
+    ./${base}  # Run again to show output
     ((numfailures++))
-  else 
-    echo -n " passed"
+  else
+    echo "PASS: $i"
     rm ${base}
-  fi 
+  fi
+  
   rm $i.bc
 done
 
-
-# #type checking and pretty printing of SIPC
-# for i in sipc/*.tip
-# do
-#   initialize_test
-#   base="$(basename $i .tip)"
-#   expected="$i.pppt"  # Expected pretty print output file
-#   generated="${SCRATCH_DIR}/$base.pppt"  # Generated output for this test run
-
-#   # Run the type-checking and pretty-printing
-#   ${TIPC} -pp -pt $i > "$generated"
-
-#   # TEMP CODE: if expected pretty print output does not exist, saves generated as expected
-#   if [[ ! -f "$expected" ]]; then
-#     echo "No expected output found for $i. Saving generated output as expected."
-#     cp "$generated" "$expected"  # Save generated output as expected for next run
-#   else
-#     # If the expected file exists, compare it with the generated output
-#     diff "$expected" "$generated" > "${SCRATCH_DIR}/$base.diff"
-#     if [[ -s ${SCRATCH_DIR}/$base.diff ]]; then
-#       echo -n "Test differences for : " 
-#       echo $i
-#       cat "${SCRATCH_DIR}/$base.diff"
-#       ((numfailures++))
-#     fi 
-#   fi
-# done
-
-
-# Print out the test results
-if [ ${numfailures} -eq "0" ]; then
-  echo -n " all " 
-  echo -n ${numtests}
-  echo " tests passed"
+if [ ${numfailures} -eq 0 ]; then
+  echo "All ${numtests} tests passed!"
 else
-  echo -n " " 
-  echo -n ${numfailures}/${numtests}
-  echo " tests failed"
+  echo "${numfailures}/${numtests} tests failed."
 fi
 
 rm -r ${SCRATCH_DIR}

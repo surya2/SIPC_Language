@@ -1,11 +1,6 @@
-a() {
-    var x;
-    x = [1, 2, 3];
-    return x[2];
-}
-
-
 main() {
-    if (a() != 3) error a();
+    var x, y;
+    x = [1, 2, 3];
+    y = x[1];
     return 0;
 }
