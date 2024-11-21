@@ -57,7 +57,6 @@ h() {
 i(){
     return 5 % 2;
 }
-
 main() {
     if (a() != 1) error a();
     if (b() != 0) error b();
