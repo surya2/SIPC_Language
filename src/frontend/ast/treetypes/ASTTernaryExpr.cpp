@@ -4,7 +4,7 @@
 
 std::ostream &ASTTernaryExpr::print(std::ostream &out) const
 {
-    out << *getCondition() << " ? " << *getTrueExpr() << " : " << *getFalseExpr();
+    out << "(" << *getCondition() << " ? " << *getTrueExpr() << " : " << *getFalseExpr() << ")";
     return out;
 } // LCOV_EXCL_LINE
 

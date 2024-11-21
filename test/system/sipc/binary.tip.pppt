@@ -70,6 +70,11 @@ h()
   return x;
 }
 
+i() 
+{
+  return (5 % 2);
+}
+
 main() 
 {
   if ((a() != 1)) 
@@ -88,6 +93,8 @@ main()
     error g();
   if ((h() != 0)) 
     error h();
+  if ((i() != 1)) 
+    error i();
   return 0;
 }
 
@@ -100,6 +107,7 @@ Functions : {
   f : () -> int,
   g : () -> int,
   h : () -> int,
+  i : () -> int,
   main : () -> int
 }
 
@@ -133,6 +141,10 @@ Locals for function g : {
 
 Locals for function h : {
   x : int
+}
+
+Locals for function i : {
+
 }
 
 Locals for function main : {

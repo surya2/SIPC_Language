@@ -11,7 +11,8 @@
 #include <sstream>
 
 static void testidentmain(std::stringstream &program,
-                          std::set<std::string> &expected) {
+                          std::set<std::string> &expected)
+{
   auto ast = ASTHelper::build_ast(program);
   auto symbols = SymbolTable::build(ast.get());
   auto unifier = std::make_shared<Unifier>();
@@ -34,7 +35,8 @@ static void testidentmain(std::stringstream &program,
   auto collected = mainVisitor.getCollectedConstraints();
 
   std::set<std::string> collectedSet;
-  for (int i = 0; i < collected.size(); i++) {
+  for (int i = 0; i < collected.size(); i++)
+  {
     std::stringstream stream;
     stream << collected.at(i);
     collectedSet.insert(stream.str());
@@ -44,7 +46,8 @@ static void testidentmain(std::stringstream &program,
 }
 
 TEST_CASE("PolyTypeConstraintVisitor: monomorphic identity function",
-          "[TypeConstraintVisitor]") {
+          "[TypeConstraintVisitor]")
+{
   std::stringstream program;
   program << R"(ident(p)  {
  return p;
@@ -74,7 +77,8 @@ main() {
 }
 
 TEST_CASE("PolyTypeConstraintVisitor: polymorphic identity function",
-          "[TypeConstraintVisitor]") {
+          "[TypeConstraintVisitor]")
+{
   std::stringstream program;
   program << R"(ident(p) poly {
  return p;

@@ -44,7 +44,7 @@ void ASTForLoopStmt::accept(ASTVisitor *visitor)
 // Do I need to print it like the for loop is written by the developer with the ':', '..' and 'by'?
 std::ostream &ASTForLoopStmt::print(std::ostream &out) const
 {
-    out << "for (" << *VAR << " : " << *START << " .. " << *END;
+    out << "for (" << *VAR << ":" << *START << " .. " << *END;
     if (STEP)
     {
         out << " by " << *STEP;
