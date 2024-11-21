@@ -5,7 +5,7 @@ a() {
     for (z : x) {
         y = y+z;
     }
-    return z;
+    return y;
 }
 
 main() {

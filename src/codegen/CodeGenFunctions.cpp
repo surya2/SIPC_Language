@@ -1352,6 +1352,81 @@ llvm::Value *ASTTernaryExpr::codegen()
 llvm::Value *ASTIterStmt::codegen()
 {
   LOG_S(1) << "Generating code for " << *this;
+
+  llvm::Function *TheFunction = irBuilder.GetInsertBlock()->getParent();
+  labelNum++;
+
+  llvm::BasicBlock *InitBB = llvm::BasicBlock::Create(
+      llvmContext, "init" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *HeaderBB = llvm::BasicBlock::Create(
+      llvmContext, "header" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *BodyBB = llvm::BasicBlock::Create(
+      llvmContext, "body" + std::to_string(labelNum), TheFunction);
+  llvm::BasicBlock *ExitBB = llvm::BasicBlock::Create(
+      llvmContext, "exit" + std::to_string(labelNum), TheFunction);
+
+  irBuilder.CreateBr(InitBB);
+
+  irBuilder.SetInsertPoint(InitBB);
+
+  llvm::Value *iterableValue = getIterable()->codegen();
+  if (!iterableValue)
+  {
+    throw InternalError("Failed to generate code for the iterable");
+  }
+
+  llvm::Type *elementType = llvm::Type::getInt64Ty(llvmContext);
+  llvm::StructType *arrayStructType = llvm::StructType::get(
+      llvmContext, {llvm::Type::getInt64Ty(llvmContext), elementType->getPointerTo()});
+  llvm::Value *arrayStructPtr = irBuilder.CreateIntToPtr(iterableValue, arrayStructType->getPointerTo(), "arrayPtrCast");
+
+  llvm::Value *sizePtr = irBuilder.CreateStructGEP(arrayStructType, arrayStructPtr, 0, "sizePtr");
+  llvm::Value *arraySize = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext), sizePtr, "arraySize");
+
+  llvm::Value *dataPtr = irBuilder.CreateStructGEP(arrayStructType, arrayStructPtr, 1, "dataPtr");
+  llvm::Value *arrayData = irBuilder.CreateLoad(elementType->getPointerTo(), dataPtr, "arrayData");
+
+  llvm::AllocaInst *indexAlloca = irBuilder.CreateAlloca(llvm::Type::getInt64Ty(llvmContext), nullptr, "index");
+  irBuilder.CreateStore(llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 0), indexAlloca);
+
+  irBuilder.CreateBr(HeaderBB);
+
+  irBuilder.SetInsertPoint(HeaderBB);
+
+  llvm::Value *currentIndex = irBuilder.CreateLoad(indexAlloca->getAllocatedType(), indexAlloca, "currentIndex");
+  llvm::Value *cond = irBuilder.CreateICmpSLT(currentIndex, arraySize, "loopcond");
+  irBuilder.CreateCondBr(cond, BodyBB, ExitBB);
+
+  irBuilder.SetInsertPoint(BodyBB);
+
+  llvm::Value *elementPtr = irBuilder.CreateGEP(
+      elementType, arrayData, currentIndex, "arrayElementPtr");
+  llvm::Value *elementValue = irBuilder.CreateLoad(elementType, elementPtr, "arrayElement");
+
+  lValueGen = true;
+  llvm::Value *elementVarAlloc = getElement()->codegen();
+  lValueGen = false;
+
+  if (!elementVarAlloc)
+  {
+    throw InternalError("Failed to generate code for element variable");
+  }
+  irBuilder.CreateStore(elementValue, elementVarAlloc);
+
+  llvm::Value *bodyCode = getBody()->codegen();
+  if (!bodyCode)
+  {
+    throw InternalError("Failed to generate code for the loop body");
+  }
+
+  llvm::Value *nextIndex = irBuilder.CreateAdd(
+      currentIndex, llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 1), "nextIndex");
+  irBuilder.CreateStore(nextIndex, indexAlloca);
+
+  irBuilder.CreateBr(HeaderBB);
+
+  irBuilder.SetInsertPoint(ExitBB);
+
   return irBuilder.CreateCall(nop);
 }
 
