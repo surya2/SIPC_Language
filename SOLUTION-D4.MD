@@ -12,6 +12,8 @@ One this structure of storing the arrays was functional, most of the remainder o
 
 ## Testing 
 
-We tested with compiled self testing. This introduced a lot of complexity, so to isolate just our new tests, we both added test runners to run.sh, but also created runsipc.sh, which is ran with ./runtests.sh -n.
+We tested with compiled self testing. This introduced a lot of complexity, so to isolate just our new tests, we both added test runners to run.sh, but also created runsipc.sh, which is ran with ./runtests.sh -n. This script compiles and runs all of the tests, and keeps a record of what passed and failed.
 
-The tests separate out each feature we implemented separately 
+Additional, we added a section to run.sh that procedurally generated and saved the pretty printer files as means of comparison.
+
+The tests separate out each feature we implemented separately. They also implement relavent edge caes to make sure the code still works.
