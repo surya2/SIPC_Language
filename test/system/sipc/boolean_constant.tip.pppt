@@ -1,0 +1,22 @@
+t() 
+{
+  var x;
+  x = true;
+  return x;
+}
+
+f() 
+{
+  var x;
+  x = false;
+  return x;
+}
+
+main() 
+{
+  if ((t() != true)) 
+    error -1;
+  if ((f() != false)) 
+    error -1;
+  return 0;
+}

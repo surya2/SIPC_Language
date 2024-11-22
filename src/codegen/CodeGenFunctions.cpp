@@ -463,7 +463,7 @@ llvm::Value *ASTBooleanExpr::codegen()
 {
   LOG_S(1) << "Generating code for " << *this;
 
-  return llvm::ConstantInt::get(llvm::Type::getInt1Ty(llvmContext),
+  return llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext),
                                 getValue());
 } // LCOV_EXCL_LINE
 
@@ -586,6 +586,19 @@ llvm::Value *ASTUnaryExpr::codegen()
     // Decrement: Subtract 1 from the operand
     llvm::Value *one = llvm::ConstantInt::get(operand->getType(), 1);
     return irBuilder.CreateSub(operand, one, "decmp");
+  }
+  else if (getOp() == "#")
+  {
+    llvm::Type *elementType = llvm::Type::getInt64Ty(llvmContext);
+
+    llvm::StructType *arrayStructType = llvm::StructType::get(
+        llvmContext, {llvm::Type::getInt64Ty(llvmContext), elementType->getPointerTo()});
+
+    auto *arrayStructPtr = irBuilder.CreateIntToPtr(operand, arrayStructType->getPointerTo(), "arrayPtrCast");
+
+    llvm::Value *sizePtr = irBuilder.CreateStructGEP(arrayStructType, arrayStructPtr, 0, "sizePtr");
+    llvm::Value *arraySize = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext), sizePtr, "arraySize");
+    return arraySize;
   }
   else
   {

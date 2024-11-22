@@ -1,16 +1,28 @@
-main() 
+a() 
 {
   var x, y;
+  y = 2;
   x = [1, 2, 3];
-  y = x[1];
+  return x[y];
+}
+
+main() 
+{
+  if ((a() != 3)) 
+    error a();
   return 0;
 }
 
 Functions : {
+  a : () -> int,
   main : () -> int
 }
 
-Locals for function main : {
+Locals for function a : {
   x : int[int],
   y : int
+}
+
+Locals for function main : {
+
 }
