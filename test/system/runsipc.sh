@@ -26,8 +26,8 @@ initialize_test() {
 
 echo "Running tests..."
 
-for i in sipc/*.tip; do
-  base="$(basename $i .tip)"
+for i in sipc/*.{tip,sip}; do
+  base="$(basename $i .${i##*.})"
   
   initialize_test
   echo

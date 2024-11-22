@@ -1,7 +1,7 @@
 a() {
     var x, y;
     y=0;
-    for(x : 1 .. 5){
+    for(x : 1 .. 6){
         y++;
     }
     return y;
@@ -10,7 +10,7 @@ a() {
 b() {
     var x, y;
     y=0;
-    for(x : 1 .. 5 by 2){
+    for(x : 1 .. 6 by 2){
         y++;
     }
     return y;
@@ -19,7 +19,7 @@ b() {
 c() {
     var x, y;
     y=0;
-    for(x : 1 .. 5){
+    for(x : 1 .. 6){
         y = y+x;
     }
     return y;
@@ -28,7 +28,7 @@ c() {
 d() {
     var x, y;
     y=0;
-    for(x : 1 .. 5 by 2){
+    for(x : 1 .. 6 by 2){
         y = y+x;
     }
     return y;

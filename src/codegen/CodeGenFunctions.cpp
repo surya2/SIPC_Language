@@ -1068,6 +1068,7 @@ llvm::Value *ASTArrayExpr::codegen()
   llvm::Value *elementSize = llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), elementSizeBytes);
 
   llvm::Value *callocArgs[] = {numElements, elementSize};
+
   llvm::Value *callocResult = irBuilder.CreateCall(callocFun, callocArgs, "callocResult");
 
   llvm::Value *dataPtr = irBuilder.CreateStructGEP(arrayStructType, arrayStructAlloca, 1, "dataPtr");
@@ -1096,21 +1097,28 @@ llvm::Value *ASTArrayRefExpr::codegen()
 {
   LOG_S(1) << "Generating code for array reference " << *this;
 
+  bool isLValue = lValueGen;
+  if (isLValue)
+  {
+    lValueGen = false;
+  }
+
   llvm::Type *elementType = llvm::Type::getInt64Ty(llvmContext);
 
   // Struct type for array: { i64, i64* }
   llvm::StructType *arrayStructType = llvm::StructType::get(
       llvmContext, {llvm::Type::getInt64Ty(llvmContext), elementType->getPointerTo()});
 
+  lValueGen = false;
   llvm::Value *uncastedArrayStructPtr = ARRAY->codegen(); // Should be a pointer to the struct
-  auto *arrayStructPtr = irBuilder.CreateIntToPtr(uncastedArrayStructPtr, arrayStructType->getPointerTo(), "arrayPtrCast");
+  auto *arrayStructAddress = irBuilder.CreateIntToPtr(uncastedArrayStructPtr, arrayStructType->getPointerTo(), "arrayPtrCast");
 
   // Extract array size and data pointer
-  llvm::Value *sizePtr = irBuilder.CreateStructGEP(arrayStructType, arrayStructPtr, 0, "sizePtr");
+  llvm::Value *sizePtr = irBuilder.CreateStructGEP(arrayStructType, arrayStructAddress, 0, "sizePtr");
   llvm::Value *arraySize = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext), sizePtr, "arraySize");
 
-  llvm::Value *dataPtr = irBuilder.CreateStructGEP(arrayStructType, arrayStructPtr, 1, "dataPtr");
-  llvm::Value *arrayData = irBuilder.CreateLoad(elementType->getPointerTo(), dataPtr, "arrayData");
+  llvm::Value *arrayAddress = irBuilder.CreateStructGEP(arrayStructType, arrayStructAddress, 1, "dataPtr");
+  llvm::Value *arrayDataAddress = irBuilder.CreateLoad(elementType->getPointerTo(), arrayAddress, "arrayData");
 
   llvm::Value *indexVal = INDEX->codegen();
   if (!indexVal)
@@ -1121,11 +1129,13 @@ llvm::Value *ASTArrayRefExpr::codegen()
 
   if (indexVal->getType()->isPointerTy())
   {
+    std::cout << "Index type is pointer " << std::endl;
     indexVal = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext), indexVal, "indexLoad");
   }
 
   if (indexVal->getType() != llvm::Type::getInt64Ty(llvmContext))
   {
+    std::cout << "Index type is not i64 " << std::endl;
     indexVal = irBuilder.CreateIntCast(indexVal, llvm::Type::getInt64Ty(llvmContext), true, "indexCast");
   }
 
@@ -1157,18 +1167,16 @@ llvm::Value *ASTArrayRefExpr::codegen()
 
   // In bounds handling
   irBuilder.SetInsertPoint(inBoundsBlock);
-  llvm::Value *elementPtr = irBuilder.CreateGEP(
-      elementType, arrayData, indexVal, "arrayElementPtr");
+  llvm::Value *elementAddress = irBuilder.CreateGEP(
+      elementType, arrayDataAddress, indexVal, "arrayElementPtr");
 
-  llvm::Value *elementVal = irBuilder.CreateLoad(elementType, elementPtr, "arrayElement");
-
-  if (lValueGen)
+  if (isLValue)
   {
-    return elementPtr;
+    return elementAddress;
   }
   else
   {
-    return irBuilder.CreateLoad(elementType, elementPtr, "arrayElement");
+    return irBuilder.CreateLoad(elementType, elementAddress, "arrayElement");
   }
 }
 
@@ -1369,7 +1377,7 @@ llvm::Value *ASTForLoopStmt::codegen()
     throw InternalError("failed to generate bitcode for the end value");
   }
   llvm::Value *CurrentVal = irBuilder.CreateLoad(StartVal->getType(), VarAlloc, "currentval");
-  llvm::Value *CondV = irBuilder.CreateICmpSLE(CurrentVal, EndVal, "loopcond");
+  llvm::Value *CondV = irBuilder.CreateICmpSLT(CurrentVal, EndVal, "loopcond");
 
   irBuilder.CreateCondBr(CondV, BodyBB, ExitBB);
 

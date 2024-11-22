@@ -1,0 +1,22 @@
+main() 
+{
+  var a, x;
+  a = [1003, 2, 3];
+  a[0] = 27;
+  x = a[0];
+  if ((x != 27)) 
+    error -1;
+  a[2] = a[1];
+  if ((a[2] != 2)) 
+    error -1;
+  return 0;
+}
+
+Functions : {
+  main : () -> int
+}
+
+Locals for function main : {
+  a : int[int],
+  x : int
+}
