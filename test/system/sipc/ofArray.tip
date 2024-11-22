@@ -22,8 +22,8 @@ d() {
     var x, y, z;
     y=5;
     z=6;
-    x = [z of y];
-    return x[0];
+    x = [y of [y of 5]];
+    return x[0][0];
 }
 
 main() {

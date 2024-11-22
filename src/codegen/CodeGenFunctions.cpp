@@ -1005,11 +1005,6 @@ llvm::Value *ASTArrayOfExpr::codegen()
     return nullptr;
   }
 
-  if (elementValue->getType() != elementType)
-  {
-    elementValue = irBuilder.CreateIntCast(elementValue, elementType, true, "elementCast");
-  }
-
   // Initialize array elements
   llvm::Value *zero = llvm::ConstantInt::get(llvm::Type::getInt64Ty(llvmContext), 0);
   llvm::Value *loopIndex = irBuilder.CreateAlloca(llvm::Type::getInt64Ty(llvmContext), nullptr, "loopIndex");
@@ -1124,6 +1119,11 @@ llvm::Value *ASTArrayRefExpr::codegen()
     return nullptr;
   }
 
+  if (indexVal->getType()->isPointerTy())
+  {
+    indexVal = irBuilder.CreateLoad(llvm::Type::getInt64Ty(llvmContext), indexVal, "indexLoad");
+  }
+
   if (indexVal->getType() != llvm::Type::getInt64Ty(llvmContext))
   {
     indexVal = irBuilder.CreateIntCast(indexVal, llvm::Type::getInt64Ty(llvmContext), true, "indexCast");
@@ -1162,7 +1162,14 @@ llvm::Value *ASTArrayRefExpr::codegen()
 
   llvm::Value *elementVal = irBuilder.CreateLoad(elementType, elementPtr, "arrayElement");
 
-  return elementVal;
+  if (lValueGen)
+  {
+    return elementPtr;
+  }
+  else
+  {
+    return irBuilder.CreateLoad(elementType, elementPtr, "arrayElement");
+  }
 }
 
 llvm::Value *ASTDeclNode::codegen()
