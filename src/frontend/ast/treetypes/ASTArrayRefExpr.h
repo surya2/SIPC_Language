@@ -2,6 +2,7 @@
 
 #include "ASTDeclNode.h"
 #include "ASTExpr.h"
+#include "ASTArrayExpr.h"
 
 /*! \brief Class for defining a record.
  */

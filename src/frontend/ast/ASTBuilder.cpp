@@ -516,7 +516,8 @@ Any ASTBuilder::visitArrayOfExpr(TIPParser::ArrayOfExprContext *ctx)
   auto lengthExpr = ctx->expr(0);
   int arrayLength = -1;
   visit(lengthExpr);
-  if (std::dynamic_pointer_cast<ASTNumberExpr>(visitedExpr))
+  auto lenExpr = std::dynamic_pointer_cast<ASTNumberExpr>(visitedExpr);
+  if (lenExpr && lenExpr->getValue() >= 0)
   {
     arrayLength = std::dynamic_pointer_cast<ASTNumberExpr>(visitedExpr)->getValue();
     visit(repeatedElement);

@@ -1,0 +1,35 @@
+a() {
+    var x;
+    x = [5 of 5];
+    return x[0];
+}
+
+b() {
+    var x, y;
+    y=5;
+    x = [y of 5];
+    return x[0];
+}
+
+c() {
+    var x, y;
+    y=5;
+    x = [5 of y];
+    return x[0];
+}
+
+d() {
+    var x, y, z;
+    y=5;
+    z=6;
+    x = [y of [y of 5]];
+    return x[0][0];
+}
+
+main() {
+    if (a() != 5) error a();
+    if (b() != 5) error b();
+    if (c() != 5) error c();
+    if (d() != 5) error d();
+    return 0;
+}

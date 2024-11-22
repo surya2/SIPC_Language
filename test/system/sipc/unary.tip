@@ -1,0 +1,47 @@
+a() {
+    var x;
+    x=1;
+    x++;
+    return x;
+}
+
+b() {
+    var x;
+    x=1;
+    x--;
+    return x;
+}
+
+c() {
+    var x, y, z;
+    x=1;
+    y=2;
+    z=-(x+y);
+    return z;
+}
+
+d() {
+    var x, y;
+    x=true;
+    y=0;
+    if (not x) y=1;
+    return y;
+}
+
+e() {
+    var x, y;
+    x=false;
+    y=0;
+    if (not x) y=1;
+    return y;
+}
+
+
+main () {
+    if (a() != 2) error a();
+    if (b() != 0) error b();
+    if (c() != -3) error c();
+    if (d() != 0) error d();
+    if (e() != 1) error e();
+    return 0;
+}

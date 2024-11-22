@@ -178,7 +178,7 @@ TEST_CASE("ASTPrinterTest: ternary statement", "[ASTNodePrint]")
     )";
 
   std::vector<std::string> expected{
-      "b ? c : d",
+      "(b ? c : d)",
   };
 
   auto ast = ASTHelper::build_ast(stream);
@@ -286,7 +286,7 @@ TEST_CASE("ASTPrinterTest: for loops", "[ASTNodePrint]")
     )";
 
   std::vector<std::string> expected{
-      "for (y : 1 .. 10 by 2) { x = (x-1); }"};
+      "for (y:1 .. 10 by 2) { x = (x-1); }"};
 
   auto ast = ASTHelper::build_ast(stream);
 

@@ -1,0 +1,152 @@
+a() 
+{
+  var x;
+  x = 0;
+  if ((1 < 2)) 
+    x = 1;
+  return x;
+}
+
+b() 
+{
+  var x;
+  x = 0;
+  if ((2 < 1)) 
+    x = 1;
+  return x;
+}
+
+c() 
+{
+  var x;
+  x = 0;
+  if ((2 <= 1)) 
+    x = 1;
+  return x;
+}
+
+d() 
+{
+  var x;
+  x = 0;
+  if ((2 <= 2)) 
+    x = 1;
+  return x;
+}
+
+e() 
+{
+  var x;
+  x = 0;
+  if ((1 <= 2)) 
+    x = 1;
+  return x;
+}
+
+f() 
+{
+  var x;
+  x = 0;
+  if ((2 >= 1)) 
+    x = 1;
+  return x;
+}
+
+g() 
+{
+  var x;
+  x = 0;
+  if ((2 >= 2)) 
+    x = 1;
+  return x;
+}
+
+h() 
+{
+  var x;
+  x = 0;
+  if ((1 >= 2)) 
+    x = 1;
+  return x;
+}
+
+i() 
+{
+  return (5 % 2);
+}
+
+main() 
+{
+  if ((a() != 1)) 
+    error a();
+  if ((b() != 0)) 
+    error b();
+  if ((c() != 0)) 
+    error c();
+  if ((d() != 1)) 
+    error d();
+  if ((e() != 1)) 
+    error e();
+  if ((f() != 1)) 
+    error f();
+  if ((g() != 1)) 
+    error g();
+  if ((h() != 0)) 
+    error h();
+  if ((i() != 1)) 
+    error i();
+  return 0;
+}
+
+Functions : {
+  a : () -> int,
+  b : () -> int,
+  c : () -> int,
+  d : () -> int,
+  e : () -> int,
+  f : () -> int,
+  g : () -> int,
+  h : () -> int,
+  i : () -> int,
+  main : () -> int
+}
+
+Locals for function a : {
+  x : int
+}
+
+Locals for function b : {
+  x : int
+}
+
+Locals for function c : {
+  x : int
+}
+
+Locals for function d : {
+  x : int
+}
+
+Locals for function e : {
+  x : int
+}
+
+Locals for function f : {
+  x : int
+}
+
+Locals for function g : {
+  x : int
+}
+
+Locals for function h : {
+  x : int
+}
+
+Locals for function i : {
+
+}
+
+Locals for function main : {
+
+}

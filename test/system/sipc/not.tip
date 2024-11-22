@@ -1,0 +1,17 @@
+t() {
+    var x, y;
+    x = true;
+    return not x;
+}
+
+f() {
+    var x, y;
+    x = false;
+    return not x;
+}
+
+main() {
+    if (t() != false) error -1;
+    if (f() != true) error -1;
+    return 0;
+}

@@ -1,0 +1,44 @@
+a() {
+    var x, y;
+    y=0;
+    for(x : 1 .. 6){
+        y++;
+    }
+    return y;
+}
+
+b() {
+    var x, y;
+    y=0;
+    for(x : 1 .. 6 by 2){
+        y++;
+    }
+    return y;
+}
+
+c() {
+    var x, y;
+    y=0;
+    for(x : 1 .. 6){
+        y = y+x;
+    }
+    return y;
+}
+
+d() {
+    var x, y;
+    y=0;
+    for(x : 1 .. 6 by 2){
+        y = y+x;
+    }
+    return y;
+}
+
+
+main() {
+    if (a() != 5) error a();
+    if (b() != 3) error b();
+    if (c() != 15) error c();
+    if (d() != 9) error d();
+    return 0;
+}

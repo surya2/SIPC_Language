@@ -2,7 +2,7 @@ main()
 {
   var x;
   x = (42 > 41);
-  return x;
+  return 0;
 }
 
 Functions : {
@@ -10,5 +10,5 @@ Functions : {
 }
 
 Locals for function main : {
-  x : int
+  x : bool
 }

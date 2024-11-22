@@ -8,12 +8,13 @@ UNIT_TEST_DIR="${ROOT_DIR}/build/test/unit"
 SYSTEM_TEST_DIR="${ROOT_DIR}/test/system"
 
 usage() {
-  echo "usage: $0 [-h] [-s] [-u]" 1>&2
+  echo "usage: $0 [-h] [-s] [-u] [-n]" 1>&2
   echo "run the complete unit and system test suite"
   echo
   echo "-h  display help"
   echo "-s  runs system tests only"
   echo "-u  runs unit tests only"
+  echo "-n runs new sipc tests only"
 }
 
 run_unit_tests() {
@@ -48,9 +49,29 @@ run_system_tests() {
   echo "system test suite complete"
 }
 
+
+run_newsipc_tests() {
+  # Change to RTLIB_DIR directory
+  cd "${RTLIB_DIR}" || exit 1
+  if ! ./build.sh; then
+    echo "error: could not build the runtime library"
+    exit 1
+  fi
+
+  echo "running the sipc test suite"
+  # Change to SYSTEM_TEST_DIR directory
+  cd "${SYSTEM_TEST_DIR}" || exit 1
+  if ! ./runsipc.sh; then
+    echo "error while running sipc tests"
+    exit 1
+  fi
+  echo "sipc test suite complete"
+}
+
 run_system_tests="true"
 run_unit_tests="true"
-while getopts ":hsu" opt; do
+run_newsipc_tests=""
+while getopts ":hsun" opt; do
   case "${opt}" in
     h)
       usage
@@ -63,6 +84,12 @@ while getopts ":hsu" opt; do
     u)
       echo "Preparing to run only the unit tests suite"
       run_system_tests=""
+      ;;
+    n)
+      echo "Preparing to run only the new sipc test suite"
+      run_unit_tests=""
+      run_system_tests=""
+      run_newsipc_tests="true"
       ;;
     *)
       echo "$0 illegal option"
@@ -82,3 +109,6 @@ if [ -n "${run_system_tests}" ]; then
   run_system_tests
 fi
 
+if [ -n "${run_newsipc_tests}" ]; then
+  run_newsipc_tests
+fi

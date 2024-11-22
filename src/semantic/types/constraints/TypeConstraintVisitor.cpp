@@ -70,8 +70,7 @@ void TypeConstraintVisitor::endVisit(ASTFunction *element)
 
     // Return is the last statement and must be int
     auto ret = dynamic_cast<ASTReturnStmt *>(element->getStmts().back());
-    constraintHandler->handle(astToVar(ret->getArg()),
-                              std::make_shared<TipInt>());
+    constraintHandler->handle(astToVar(ret->getArg()), std::make_shared<TipInt>());
 
     constraintHandler->handle(
         astToVar(element->getDecl()),

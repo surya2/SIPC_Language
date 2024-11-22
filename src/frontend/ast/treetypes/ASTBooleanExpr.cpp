@@ -3,6 +3,13 @@
 
 #include <iostream>
 
+ASTBooleanExpr::ASTBooleanExpr(int value)
+{
+    VAL = value;
+    int int_value = value;
+    INT_VAL = std::make_shared<ASTNumberExpr>(int_value);
+}
+
 void ASTBooleanExpr::accept(ASTVisitor *visitor)
 {
     visitor->visit(this);
@@ -11,6 +18,6 @@ void ASTBooleanExpr::accept(ASTVisitor *visitor)
 
 std::ostream &ASTBooleanExpr::print(std::ostream &out) const
 {
-    out << getValue();
+    out << getBoolValue();
     return out;
 }

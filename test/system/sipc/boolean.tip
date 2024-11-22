@@ -1,0 +1,21 @@
+a() {
+    var x, y;
+    x=true;
+    y=0;
+    if (x) y=1;
+    return y;
+}
+
+b() {
+    var x, y;
+    x=false;
+    y=0;
+    if (x) y=1;
+    return y;
+}
+
+main() {
+    if (a()!= 1) error a();
+    if (b()!= 0) error b();
+    return 0;
+}
