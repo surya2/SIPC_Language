@@ -53,10 +53,6 @@ All of the tests should pass.
 
 Our continuous integration process builds on both Ubuntu 22.04 and 20.04, so these are well-supported. We do not support other linux distributions, but we know that people in the past have ported `tipc` to different distributions.
 
-### Mac OS
-
-Our continuous integration process builds on macOS 12 and macOS 13 so modern versions of macOS are well-supported. `tipc` builds on both Intel and Apple Silicon, i.e., Apple's M1 ARM processor.
-
 ### Windows Subsystem for Linux
 
 If you are using a Windows machine, tipc can be built in the Windows Subsystem for Linux (WSL). [Here](https://docs.microsoft.com/en-us/windows/wsl/install-win10#update-to-wsl-2) are instructions to install WSL and upgrade to WSL2. It is highly recommended to upgrade to WSL2. Once installed, you should install
@@ -135,8 +131,6 @@ Locals for function main : {
 
 The instructions above, and the scripts described below, make it possible to develop from the command line. This gives you lots of control, but it means you will miss the benefit of modern IDEs. Below we describe how to set up the CLion IDE for use with the project.
 
-### Command line
-
 During development you need only run build steps 1 through 5 a single time, unless you modify some `CMakeLists.txt` file. Just run `make` in the build directory to rebuild after making changes to the source.
 
 If you do need to add a source file then you will have to edit the appropriate `CMakeLists.txt` file to add it. In this case, you should:
@@ -156,32 +150,6 @@ To facilitate development of `tipc` we have collected a number of helper scripts
 When rebuilding and rerunning tests you may get errors about
 failing to merge `gcov` files. This happens when `gcov` files linger from previous
 runs. To cleanup these messages, simply run the `cleancov.sh` script.
-
-### CLion
-
-[CLion](https://www.jetbrains.com/clion/) is C++ IDE that can be used to develop and build tipc. CLion can be installed with the JetBrains suite of tools, or as a standalone tool [here](https://www.jetbrains.com/help/clion/installation-guide.html#standalone). Once installed, you can start a 30 day trial license or, as a student, you can get a free educational license [here](https://www.jetbrains.com/community/education/#students).
-
-These instructions are with respect to CLion 2023.1.3, but older or new versions work similarly - though the UI may be a bit different.
-
-If you are building for the first time with CLion, follow the first two steps of the installation process to install any needed tipc dependencies.
-
-From the `File` menu select `New` and then `Project from Version Control`. You can type in the URL for this github repository and then hit the `Clone` button. The scripts described above assume a directory structure, but a little bit of setup will synchronize your CLion project with those assumptions and allow for easy development using both CLion and scripts, when needed.
-
-From the `CLion` menu select `Build, Execution, Deployment` and then `CMake`. You want to change the `Build directory` to `build` and then define an `Environment` variable. When you ran the `bootstrap.sh` script it defined a shell variable `LLVM_DIR` in your `.bashrc`. Copy that definition into the `Environment` field under `Cache variables`. Your `Settings` should look as follows:
-
-![CLion CMake Settings](docs/assets/clion/clion_settings_for_tipc.png)
-
-Now you can click `Apply` and then `OK` to complete the setup.
-
-The project can now be built or rebuilt by clicking the "Build" button in the toolbar.
-
-CLion has great debugging support as well as test coverage support for the Catch2 tests included in the project. You will rarely need to use the commandline scripts, but if you do just move to `~/CLionProjects/tipc` and you can execute them there to:
-
-1.  resolve `gcov` merge errors by running `cleancov.sh`
-2.  run system tests with `runtests.sh`
-3.  generate documentation with `gendocs.sh`
-
-CLion also has some nice plugins. For example, there is an [ANTLR v4](https://plugins.jetbrains.com/plugin/7358-antlr-v4) plugin that allows you to more easily develop extensions to the grammar for TIP. Installation is easy, just click on the `Install to CLion ...` button on the web-page. Then right click on any rule and select `Test Rule ...` and two frames pop up at the bottom of the UI: the left frame allows you to type in fragments of input and the right frame shows the resulting parse tree.
 
 ### Log Messages
 
@@ -209,193 +177,3 @@ pre-commit install
 ```
 
 Now, `c++` and `cmake` formatting will be checked before each commit.
-
-## Documentation
-
-The TIP grammar, [tipg4](./tipg4/TIP.g4), is implemented using ANTLR4. This grammar is free of any semantic actions, though it does use ANTLR4 rule features which allow for control over the tree visitors that form key parts of the compiler. This allows the structure of the grammar to remain relatively clean, i.e., no grammar factoring or stratification needed.
-
-The `tipc` compiler is has a pretty classic design. It is comprised of four phases:
-
-- [frontend](./src/frontend) takes care of parsing, constructing an AST representation, and pretty printing
-- [semantic analysis](./src/semantic) that performs assignability, symbol, and type checking
-- [code generation](./src/codegen) that produces LLVM bitcode from an AST and emits a binary
-- [optimization](./src/optimizer) that runs a few LLVM optimization passes to improve the bitcode
-
-Doxygen [documentation](https://matthewbdwyer.github.io/tipc) for the project is
-available for the project. The documentation is a work in progress
-and will improve over time.
-
-The `tipc` driver program only produces a bitcode file, `.bc`. You need to link it
-with the [runtime library](./rtlib/tip_rtlib.c) which define the processing of command
-line arguments, which is non-trivial for TIP, establish necessary runtime structures,
-and implement IO routines. A [script](./bin/build.sh) is available to link binaries
-compiled by `tipc` with the runtime library.
-
-## Goals and Plans
-
-The goal of this project is to provide a starting point for project work in an undergraduate compilers course. As such it similar to lots of other compiler projects, but there are some differences.
-
-First and foremost, the TIP language includes a number of rich features, e.g., high-order functions, and type inference, and the `tipc` compiler targets LLVM - a key component of a production compiler infrastructure. These choices are intentional and while they create some challenges the project is intended to help demystify complex language features, e.g., parametric polymorphism, by illustrating how they can be realized.
-
-Second, the project attempts to use modern software development practices, e.g. Doxygen for in-code documentation, unit testing with Catch2, continuous integration with GitHub Actions, and code coverage with `lcov`.
-
-Third, the project intentionally makes heavy use of the [Visitor pattern](https://en.wikipedia.org/wiki/Visitor_pattern) which is quite appropriate in the context of a compiler. Our use of it is intended to demonstrate how this type of abstract design element in a system can yield conceptual simplicity and savings in development. The project currently uses 6 visitors that extend [ASTVisitor](./src/frontend/ast/ASTVisitor.h) and another visitor from ANTLR4.
-
-Finally, the project is implemented in C++17 using modern features. For example, all memory allocation uses smart pointers, we use unique pointers where possible and shared pointers as well, to realize the [RAII](https://en.wikipedia.org/wiki/Resource_acquisition_is_initialization) pattern. Again this presents some challenges, but addressing them is illustrated in the `tipc` code base and hopefully they provide a good example for students.
-
-The project is a work-in-progress in the sense that we are planning to perform corrective maintenance, as needed, as well as perfective maintenance. For the latter, we expect to make a new release of the project in early August every year. This release will focus on improving the use of modern C++
-and to incorporate better design principles, patterns, and practices.
-We welcome issue reports and pull-requests along these lines.
-
-## Differences from TIP and Limitations
-
-Other than issues related to the efficiency of the code that it generates, the `tipc` compiler has two limitations.
-
-`tipc` supports a variant of the TIP language semantics in a few ways. It implements the `!=` operator which allows us to conveniently write self-contained system tests and it implements the [C operator precedence rules](https://en.cppreference.com/w/c/language/operator_precedence), whereas the original TIP uses a few different rules. This surfaces in the interplay between pointer dereference and field access. An expression `*r.f` is interpreted as `*(r.f)` according t the C precedence rules and as `(*r).f` according to the [TIP Scala](https://github.com/cs-au-dk/TIP) implementation. If in doubt, add parentheses to express your meaning.
-
-By default `tipc` implements the unification-based monomorphic type inference algorithm used in the [Scala implementation](https://github.com/cs-au-dk/TIP/). `tipc` also support a form of polymorphic type inference using the `--pi` option. To use polymorphic type inference programmers can add the `poly` keyword to a function declaration, but `tipc` will only perform polymorphic type inference for such functions if they are non-recursive.
-
-There is also a difference in type inference related to records. The type system that ensures that any expression appearing in the record position of a field access expression is in fact a record, but it does not infer precise record typing. Instead the strategy used is to define an _uber_ record that consists of all of the fields referenced across the program. Code generation for records will allocate a global record and then explicitly initialize fields present in a record expression. If the record is being created via an `alloc` expresion, the fields that aren't explictly set will be set to a default value 0, as we allocate memory using the C function `calloc`. If the record is being created without explictly allocating memory for it, the fields that aren't explictly set will not be given any value, but may still be referenced. This can lead to some unexpected behavior. Consider this TIP program:
-
-```
-main() { var r; r = {g:1}; return access(r); }
-access(r) { return r.f; }
-```
-
-The record expression, `{g:1}`, forces the global record to contain a field `g`, and the access expression `r.f`, forces the presence of field `f`. Because `r` is not being allocated using an `alloc` expression, access will return whatever value was in memory at the location of `r.f`.
-One might prefer that this program yield a type error, but that would require a more sophisticated type system. We chose not to implement that to manage the complexity of what is primarily a pedagogical project. If instead, r is allocated using `alloc` like the following:
-
-```
-main() { var r; r = alloc {g:1}; return access(r); }
-access(r) { return r.f; }
-```
-
-The record expression default initializes `f` to `0` and this is the value that is accessed and returned from the call to `access` and then from `main`.
-
-Second, TIP allows memory allocation, yet its runtime system does not include a garbage collector.  
-The TIP program [recordLeak.tip](test/system/leak/recordLeak.tip), shown below, leaks memory because the `alloc` constructor causes the record to be allocated on the heap:
-
-```
-// recordLeak.tip
-foo(x,y,z){
-    var rec;
-    rec = alloc {l: x, m: y, n: z};
-    return (*rec).m;
-}
-
-main(){
-    var i, j, a;
-    a = 0;
-    i = 0;
-    j = 0;
-    while (1000000000 > i) {
-      while (1000000000 > j) {
-        a = a + foo(3,2,4);
-        j = j + 1;
-      }
-      i = i + 1;
-    }
-    return 0;
-}
-```
-
-This is a valid tip program which can be compiled into an executable using and observe it's memory usage using:
-
-```
-/path/to/tipc/bin/build.sh --do test/system/leak/recordLeak.tip
-./recordLeak &; top
-```
-
-You can then kill top using `Ctrl+C` and then kill the ./recordleak with `fg` and `Ctrl+C`. It's important that you disable the optimizer with the `--do` flag. Otherwise, the optimizer would be smart enough to simply return the `y` parameter's value. If we remove the alloc from `foo`, as we do in [recordNoLeak.tip](test/system/leak/recordNoLeak.tip), then the record is allocated on the call stack and it is reclained when the call to `foo` returns:
-
-```
-// recordNoLeak.tip
-foo(x,y,z){
-    var rec;
-    rec = {l: x, m: y, n: z};
-    return (*rec).m;
-}
-
-main(){
-    var i, j, a;
-    a = 0;
-    i = 0;
-    j = 0;
-    while (1000000000 > i) {
-      while (1000000000 > j) {
-        a = a + foo(3,2,4);
-        j = j + 1;
-      }
-      i = i + 1;
-    }
-    return 0;
-}
-```
-
-We can find that this program will not create a memory leak because rec will be allocated on the stack instead of the heap as the alloc would.
-
-Incorporating a garbage collector is a possible future extension to the runtime library.
-
-## Resources
-
-To fully understand this project quite a bit of background is required.
-We collect a number of resources that we think can be helpful in that regard.
-
-### C++ Resources
-
-If you find yourself unfamiliar with certain aspects of the C++ programming
-language we encourage you to explore the _Back To Basics_ videos that have
-been presented at [CppCon](https://cppcon.org/). Provided below are links
-to a number of these videos, as well as to other resources that are relevant
-to this project.
-
-#### Move Semantics
-
-- [Move Semantics (part 1 of 2)](https://youtu.be/St0MNEU5b0o)
-- [Move Semantics (part 2 of 2)](https://youtu.be/pIzaZbKUw2s)
-
-#### Value Categories
-
-- [Understanding Value Categories](https://youtu.be/XS2JddPq7GQ)
-- [“New” Value Terminology](https://www.stroustrup.com/terminology.pdf)
-
-#### Smart pointers
-
-- [Smart Pointers](https://youtu.be/xGDLkt-jBJ4)
-
-### CMake Resources
-
-- [CMake docs](https://cmake.org/cmake/help/v3.7/)
-- [More Modern CMake](https://youtu.be/y7ndUhdQuU8)
-- [Oh No! More Modern CMake](https://youtu.be/y9kSr5enrSk)
-
-### Catch2 and Unit Testing Resources
-
-- [Catch2 docs](https://github.com/catchorg/Catch2/tree/master/docs)
-- [Modern C++ Testing with Catch2](https://youtu.be/Ob5_XZrFQH0)
-
-### LLVM Resources
-
-To understand this code, and perhaps extend it, you will want to become familiar with the [core LLVM classes](http://llvm.org/docs/ProgrammersManual.html#the-core-llvm-class-hierarchy-reference). It can be difficult to absorb all of the information in this type of documentation just by reading it. A goal-directed strategy where you move back and forth between reading code and reading this documentation seems to work well for many people.
-
-If you are familiar with the [LLVM tutorial](https://llvm.org/docs/tutorial/) you will see its influence on this compiler which leverages idioms, strategies, and code fragments from the tutorial. The LLVM tutorials are a great starting point for understanding the APIs in the context of compiling.
-
-There is lots of great advice about using LLVM available:
-
-- https://www.cs.cornell.edu/~asampson/blog/llvm.html
-- the [LLVM Programmer's Manual](http://llvm.org/docs/ProgrammersManual.html) is a key resource
-- someone once told me to just use a search engine to find the LLVM APIs and its a standard use case for me, e.g., I don't remember where the docs are I just search for `llvm irbuilder`
-- LLVM has some nuances that take a bit to understand. For instance, the [GEP](https://llvm.org/docs/GetElementPtr.html) instruction, which `tipc` uses quite a bit given that it emits calls through a function table.
-- LLVM15+ have implemented the concept of "Opaque Pointers", this removes all the typed pointer implementations and associated functions.
-  - [LLVM Docs on OpaquePointers](https://llvm.org/docs/OpaquePointers.html) talks about this in reasonable detail.
-  - [Here](docs/OpaquePointers.md) is a Quick summary of the change and how that affects tipc.
-
-### Git Resources
-
-- [Pro Git Book](https://git-scm.com/book/en/v2)
-- [Git For Ages 4 And Up](https://www.youtube.com/watch?v=1ffBJ4sVUb4)
-
-### CLion Resources
-
-- [Using Git in CLion](https://www.jetbrains.com/help/clion/using-git-integration.html)
-- [Using CLion with WSL](https://www.jetbrains.com/help/clion/how-to-use-wsl-development-environment-in-clion.html#wsl-tooclhain)
