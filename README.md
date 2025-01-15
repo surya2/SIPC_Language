@@ -3,16 +3,12 @@
 1. **Deliverable 1:** _Extend parser to support SIP language_ - refer to `SOLUTION-D1.md` for solution and process
 2. **Deliverable 2:** _Extend AST tree build to support SIP language_ - refer to `SOLUTION-D2.md` for solution and process
 3. **Deliverable 3:** _Extend the semantic analyses to support SIP langauge_ - refer to `SOLUTION-D3.md` for solution and process
+4. **Deliverable 4:** _Extend optimizers for SIP language_ - refer to 'SOLUTION-D4.md` for solution and process
 
 <br />
 
-[![Build Status](https://github.com/matthewbdwyer/tipc/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/matthewbdwyer/tipc/actions/workflows/build-and-test.yml)
-[![codecov.io](https://codecov.io/gh/matthewbdwyer/tipc/coverage.svg?branch=main&flag=codecoverage)](https://codecov.io/gh/matthewbdwyer/tipc?branch=main)
-[![codecov.io](https://img.shields.io/endpoint?logo=codecov&logoColor=blue&url=https%3A%2F%2Fmatthewbdwyer.github.io%2Ftipc%2Fdoccoverage.json)](https://codecov.io/gh/matthewbdwyer/tipc?branch=main)
-
-# tipc
-
-A compiler from TIP to llvm bitcode
+# Disclaimer
+A compiler from TIP to llvm bitcode. This compiler has been extended to support sipc. Please refer to the .md files corresponding to each deliverable above while we update this TIPC README with documentation for SIPC. Thank you for your patience!
 
 ## TIP Language, Interpreter, and Analyzers
 
